@@ -1,0 +1,59 @@
+.blog-bg {
+    background-color: #464c56;
+}
+
+.blog-bg-rear {
+    background-image: url("/static/img/random_grey_variations_@2X.png")
+}
+
+h1.blog-header-logo {
+    color: orange;
+    font-family: 'Shojumaru';
+}
+
+.blog-title {
+    color: orange;
+    font-family:'Changa';
+}
+
+.page-header {
+    background-color: #ff9400;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+}
+
+.content {
+    margin-left: 40px;
+}
+
+h1, h2, h3, h4 {
+   /* font-family: 'Limelight', cursive;
+    color: orange;*/
+}
+
+.post-form textarea, .post-form input {
+    width: 100%;
+}
+
+.comment {
+    margin: 20px 0px 20px 20px;
+}
+a {
+    color: Orange;
+}
+a:link {
+    color: DarkOrange;
+   
+}
+a:visited {
+    color: DarkOrange;
+}
+a:hover {
+    color: Yellow;
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
