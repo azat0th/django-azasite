@@ -1,0 +1,16 @@
+{% extends 'bifffidus/base.html' %}
+{% block content %}
+<p>Nombre de films: {{ movies.count }}</p>
+    {% for movie in movies %}
+        <div class="border text-light row">
+        	<div class="col-md-4">
+        		<a  href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{url_img}}{{movie.poster_path}}"></a>
+        	</div>
+        	<div class="col-md-8">
+		        <a  href="{% url 'movie_detail' pk=movie.pk %}"><h2 class='blog-title'>{{ movie.title }}</h2></a>
+        	    <p> {{ movie.imdb_id }}</p>
+            </div>            
+        </div>
+    {% endfor %}
+
+{% endblock content %}

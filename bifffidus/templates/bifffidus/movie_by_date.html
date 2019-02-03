@@ -1,0 +1,13 @@
+{% extends 'bifffidus/base.html' %}
+{% block content %}
+
+<p>Nombre de séances du jour: {{ screenings|length }}</p>
+
+{% for screening in screenings %}
+	<div class="border text-light">			
+		<p><a  href="{% url 'movie_detail' pk=screening.movie.pk %}"><h2 class='blog-title'>{{ screening.movie}} : {{ screening.screening_datetime }}</h2></a></p>
+		            
+	</div>
+{% endfor %}
+    
+{% endblock content %}

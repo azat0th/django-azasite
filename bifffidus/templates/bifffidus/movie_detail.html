@@ -1,0 +1,39 @@
+{% extends 'bifffidus/base.html' %}
+
+{% block content %}
+    <div class="post text-light border">       
+        <h1 class="blog-title">{{ movie.title }}</h1>
+        <img src="{{url_img}}{{ movie.poster_path }}" class="img-thumbnail  mx-auto d-block"/>
+        <p>Imdb: {{ movie.imdb_id }}</p>
+		<p>Tmdb: {{ movie.tmdb_id }}</p>
+		<p>Overview: {{ movie.overview }}</p>
+		<p>Release Date: {{ movie.release_date }}</p>
+		<p>Runtime: {{ movie.runtime }}</p>
+		<p>Tagline: {{ movie.tagline }}</p>
+		<p>Backdrop Path: {{ movie.backdrop_path }}</p>
+		<p>Poster Path: {{ movie.poster_path }}</p>
+		<p>Original Language: {{ movie.original_language }}</p>
+		<p>Original title: {{ movie.original_title }}</p>
+		<p>Genres:
+		{% for g in movie.genre.all %}
+			[{{ g.name }}]
+		{% endfor %}
+		</p>
+		<p>Production Companies: 
+		{% for p in movie.production_company.all %}
+			[{{ p.name }}]
+		{% endfor %}
+		</p>
+		<p>Countries: 
+		{% for c in movie.country.all %}
+			[{{ c.name }}]
+		{% endfor %}
+		</p>
+		<p>Spoken Languages :
+		{% for s in movie.spoken_language.all %}
+			[{{ s.name }}]
+		{% endfor %}
+		</p>
+		
+    </div>
+{% endblock %}

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'bifffidus',
 ]
 
 MIDDLEWARE = [
@@ -104,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-be'
 
 TIME_ZONE = 'UTC'
 
@@ -114,7 +115,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+gettext = lambda x: x
+LANGUAGES = (
+    ('fr', gettext('French')),
+    ('en', gettext('English')),
+    ('nl', gettext('Dutch')),
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
