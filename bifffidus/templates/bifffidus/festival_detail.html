@@ -14,10 +14,11 @@
     	{{screening_list.grouper}} ({{ screening_list.list|length }})
     	</a>
     	</h4>
+   
         {% for screening in screening_list.list %}
-        	<p><a  href="{% url 'movie_detail' pk=screening.movie_id %}">{{ screening.movie.title }}</a></p>
+	       	<a  href="{% url 'movie_detail' pk=screening.movie_id %}"><img src="{{url_img}}{{ screening.movie.poster_path }}" alt="{{ screening.movie.title }}" class="img-thumbnail  mx-auto d-block"/></a>
+        {% endfor %}
         	
-        {% endfor %}    	
     {% endfor %}
     </div>
     

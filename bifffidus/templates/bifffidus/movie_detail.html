@@ -4,8 +4,10 @@
     <div class="post text-light border">       
         <h1 class="blog-title">{{ movie.title }}</h1>
         <img src="{{url_img}}{{ movie.poster_path }}" class="img-thumbnail  mx-auto d-block"/>
-        <p>Imdb: {{ movie.imdb_id }}</p>
-		<p>Tmdb: {{ movie.tmdb_id }}</p>
+        <p>        
+        	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">IMDB link</a> 
+        	<a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id }}">TMDB link</a>
+		</p>
 		<p>Overview: {{ movie.overview }}</p>
 		<p>Release Date: {{ movie.release_date }}</p>
 		<p>Runtime: {{ movie.runtime }}</p>
@@ -35,5 +37,15 @@
 		{% endfor %}
 		</p>
 		
+		Screenings :
+		
+		{% for screening in screenings %}
+			<p>{{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>
+		{% endfor %}
+		
+		Tags : 
+		{% for tag in tags %}
+			<p>{{ tag.tag }}</p>
+		{% endfor %}
     </div>
 {% endblock %}

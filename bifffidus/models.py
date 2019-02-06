@@ -143,21 +143,29 @@ class Festival(models.Model):
 class Screening(models.Model):
     #date, heure début, screen, movie
     screening_datetime =models.DateTimeField(default=timezone.now)
-    movie = models.ForeignKey(Movie, related_name="movie", on_delete=models.SET_NULL, null=True)
-    screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.SET_NULL, null=True)
-    festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.SET_NULL, null=True)
-    is_movie = models.BooleanField(default=True)
-    tag = models.ManyToManyField('bifffidus.Tag', related_name='tag', blank=True)
+    movie = models.ForeignKey(Movie, related_name="movie", on_delete=models.CASCADE, null=True)
+    screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.CASCADE, null=True)
+    festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.CASCADE, null=True)
+    is_movie = models.BooleanField(default=True)   
     
     def __str__(self):
-        return self.screening_datetime.strftime('%d/%m/%Y %H:%M')#+' - '+self.screen.room +')'
+        return self.screening_datetime.strftime('%d/%m/%Y %H:%M')+' ('+self.screen.room_name +') : ' + self.movie.title
     
 #this model represent a screening tag, it allows to categorize the screening 
 # (can be for competitions, awards, special events...)    
 class Tag(models.Model):
     name = models.CharField(max_length=200)    
-    tag_type = models.ForeignKey('bifffidus.Tag_Type', related_name="tag_type", on_delete=models.DO_NOTHING, null=True)
+    
+    def __str__(self):
+        return self.name
+    
+class Tag_Movie_Festival(models.Model):
+    
+    festival = models.ForeignKey(Festival, related_name="festival_tag", on_delete=models.CASCADE, null=True)
+    movie = models.ForeignKey(Movie, related_name="movie_tag", on_delete=models.CASCADE, null=True)
+    tag = models.ForeignKey(Tag, related_name="tag", on_delete=models.CASCADE, null=True)
 
-#this model represent the tag type, used to categorize tags    
-class Tag_Type(models.Model):
-    name = models.CharField(max_length=200)
+    def __str__(self):
+        return self.movie.title+" : "+self.tag.name+" ["+str(self.festival.start_date.year)+"]"
+    
+        

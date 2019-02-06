@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Festival, Screen, Screening
 import datetime
+from bifffidus.models import Tag_Movie_Festival
 
 def get_dates_by_festival(pk):    
     screenings = Screening.objects.filter(festival_id=pk)
@@ -25,7 +26,9 @@ def movie_list(request):
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
     url_img="https://image.tmdb.org/t/p/w185"
-    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img,})
+    screenings = Screening.objects.filter(movie_id=pk)
+    tags = Tag_Movie_Festival.objects.filter(movie_id=pk)
+    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
 
 def movie_by_festival(request, pk):
     sql = '''   SELECT * 
@@ -36,9 +39,9 @@ def movie_by_festival(request, pk):
                 ORDER BY bifffidus_movie.title   
                     ''' % (pk)
     movies = Screening.objects.raw(sql)  
-
+    url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
-    return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates})
+    return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
 
 def festival_list(request):
     festivals = Festival.objects.all
@@ -47,9 +50,10 @@ def festival_list(request):
 def festival_detail(request, pk):
     festival = get_object_or_404(Festival, pk=pk)    
     screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
-    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings})
+    url_img="https://image.tmdb.org/t/p/w45"
+    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img,})
 
-def movie_by_date(request,year,  month,  day):      
+def movie_by_date(request, year,  month,  day):      
     screenings = Screening.objects.filter(screening_datetime__date=datetime.date(year, month, day))
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
    
