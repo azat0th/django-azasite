@@ -2,7 +2,13 @@
 {% block content %}
 	<div class="border text-light">		
 		<h2 class='blog-title'>{{ festival.title }}</h2>
-		<p>Lieu: {{ festival.place }}</p>	            
+		
+		{% for p in festival.place.all %}
+		<p>Lieu: {{ p.name }}</p>
+			{% for s in p.screen.all %}
+				<p>salle: {{s.room_name}}</p>
+			{% endfor %}
+		{% endfor %}	            
 	</div>
 	<a href="{% url 'movie_by_festival' pk=festival.pk %}">Festival Movie List</a>
     {% regroup screenings by screening_datetime|date:"D d-m-Y" as screenings_by_day %}
@@ -16,7 +22,7 @@
     	</h4>
    
         {% for screening in screening_list.list %}
-	       	<a  href="{% url 'movie_detail' pk=screening.movie_id %}"><img src="{{url_img}}{{ screening.movie.poster_path }}" alt="{{ screening.movie.title }}" class="img-thumbnail  mx-auto d-block"/></a>
+	       	<a  href="{% url 'movie_detail' pk=screening.movie_id %}">{{screening.screening_datetime}} : {{screening.movie.title}}<img src="{{url_img}}{{ screening.movie.poster_path }}" alt="{{ screening.movie.title }}" class="img-thumbnail  mx-auto d-block"/></a>
         {% endfor %}
         	
     {% endfor %}

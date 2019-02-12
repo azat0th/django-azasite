@@ -21,6 +21,9 @@ xml structure skeleton for entry file :
         </screenings>
         <tag>tag_name</tag>
     </movie>
+    <movie>
+    ...
+    </movie>
 </festival>
 
 note: 
@@ -36,8 +39,9 @@ import datetime
 from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag,\
     Tag_Movie_Festival
 from bifffidus.models import Genre, Spoken_Language, Production_Company 
-from bifffidus.models import Person, Job, Country
+from bifffidus.models import Person, Country, Cast, Crew
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 class bcolors:
     HEADER = '\033[95m'
@@ -73,23 +77,7 @@ class Command(BaseCommand):
                     festival.end_date = collection.getAttribute("end_date")
                     format_str = '%d/%m/%Y' # The date format
                     festival.end_date = datetime.datetime.strptime(collection.getAttribute("end_date"), format_str)
-                    
-                if collection.hasAttribute("place") is False:
-                    print("Root element : place = %s" % collection.getAttribute("place"))
-                    place = collection.getAttribute("place")                    
-                    place_in_db =  Place.objects.get(name=place)
-                    if(len(place_in_db)==1):
-                        print(bcolors.OKGREEN+"[Place] This place [{place}] is already in DB".format(place=festival.place+bcolors.ENDC))
-                        festival.place = place_in_db
-                    elif(len(place_in_db)==0):
-                        print(bcolors.FAIL+"[Place]A Movie with the same imdb_id is already in DB"+bcolors.ENDC)
-                        p = Place()
-                        p.name = place
-                        p.save()
-                    else:
-                        print(bcolors.FAIL+"[Place] Erreur lors de la correspondance de place avec la DB:") 
-                        print("[Place] Nombre de Places trouvés en db = {nb}".format(nb=len(place_in_db))+bcolors.ENDC)
-                    
+                                        
             if(len(festival.title)>0):
                 festival.save()
                 print()
@@ -101,18 +89,37 @@ class Command(BaseCommand):
             for place in places:
                 print(bcolors.HEADER+"***place***"+bcolors.ENDC)
                 place_name = place.getAttribute("name")
+                print("placename= {place_name}".format(place_name=place_name))
+                place_in_db = Place.objects.filter(name__exact=place_name)
+                print(place_in_db)
+                p = Place()
                 if(len(place_name)>0):
-                    p = Place()
-                    p.name = place_name
-                    screens = place.getElementsByTagName("screen")
-                    for screen in screens:
-                        screen_name = screen.firstChild.data
-                        if(len(screen_name)>0):                            
-                            s = Screen()
-                            s.room_name = screen_name
-                            s.save()
+                    if(len(place_in_db)==1):#déjà en db
+                        print(bcolors.OKGREEN+"[Place] already in DB : {place}".format(place=place_name)+bcolors.ENDC)
+                        p = Place.objects.get(name=place_name)
+                    elif(len(place_in_db)==0):#pas encore en db
+                        p.name = place_name
+                        print(bcolors.WARNING+"[Place] to add : {place}".format(place=place_name)+bcolors.WARNING)
+                        p.save()
+                        screens = place.getElementsByTagName("screen")
+                        for screen in screens:
+                            screen_name = screen.firstChild.data
+                            if(len(screen_name)>0):                            
+                                s = Screen()
+                                s.room_name = screen_name
+                                s.save()
+                                p.screen.add(s)                                            
+                        
+                    else:
+                        print(bcolors.FAIL+'A place with the same name is already in DB'+bcolors.ENDC)
+                        
                     p.save()
-                pass
+                    festival.place.add(p)
+                    
+                else:
+                    print(bcolors.FAIL+'The place is blank'+bcolors.ENDC)
+                    pass 
+            festival.save()
             # Get all the movies in the collection
             movies = collection.getElementsByTagName("movie")
             print("Nombre de films: "+str(len(movies)))
@@ -128,8 +135,9 @@ class Command(BaseCommand):
                     print(bcolors.OKGREEN+"{title} [imdb:{imdb_id}]".format(title=title, imdb_id=imdb_id, tmdb_id=m.tmdb_id)+bcolors.ENDC)                    
                     if(Movie.objects.filter(title__exact=title)):
                         print(bcolors.FAIL+'A Movie with the same title is already in DB'+bcolors.ENDC)
-                    if(Movie.objects.filter(imdb_id__exact=imdb_id)):
+                    if(len(imdb_id)>0 and Movie.objects.filter(imdb_id__exact=imdb_id)):
                         print(bcolors.FAIL+'A Movie with the same imdb_id is already in DB'+bcolors.ENDC)
+                        m = get_object_or_404(Movie,imdb_id=imdb_id)
                     else:                        
                         #m.title = ""+title
                         #m.imdb_id = ""+imdb_id                        
@@ -202,8 +210,7 @@ class Command(BaseCommand):
                                     g = Genre()
                                     g.name = genre
                                     g.save()
-                                    m.genre.add(g)
-                                    print(m.genre)                            
+                                    m.genre.add(g)                                                                
                                 else:
                                     print(bcolors.FAIL+"[Genre] Erreur lors de la correspondance des genres avec la DB:") 
                                     print("[Genre] Nombre de Genres trouvés en db = {nb}".format(nb=len(genre_in_db))+bcolors.ENDC)                        
@@ -252,8 +259,6 @@ class Command(BaseCommand):
                                 if(lang_N.childNodes.length>0):
                                     lang = lang_N.childNodes[0].data
                                     lang_in_db = Spoken_Language.objects.filter(name__exact=lang)
-                                    print("lang in db:")
-                                    print(lang_in_db)                        
                                     if(len(lang_in_db)==1):
                                         print(bcolors.OKGREEN+"[Spoken_Language] already in DB : {lang}".format(lang=lang)+bcolors.ENDC)
                                         l = Spoken_Language.objects.get(name=lang)
@@ -268,85 +273,148 @@ class Command(BaseCommand):
                                         print(bcolors.FAIL+"[Spoken_Language] Erreur lors de la correspondance des Spoken_Language avec la DB:")
                                         print("[Spoken_Language] Nombre de Spoken_Language trouvés en db= {nb}".format(nb=len(lang_in_db))+bcolors.ENDC)
 
-
-                                                    
+                                                        
                             actor_Node = tmdb.getElementsByTagName("actor")
-                            print("nb actor : {nb}".format(nb=len(actor_Node)))
-                            #for actor in actor_Node:
-                            #    print(actor.childNodes[0].data)
-                                                    
-                            crew_Node = tmdb.getElementsByTagName("crew")
-                            print("nb crew : {nb}".format(nb=len(crew_Node)))
-                            #for crew in crew_Node:
-                            #    print(crew.childNodes[0].data)
-                        else:
-                            print(bcolors.FAIL+"[TMDB_ID]: Empty")    
-                            m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "")
-                            
-                        tags = movie.getElementsByTagName("tag")
-                        print("[Tags] found: {nb}".format(nb=len(tags)))
-                        print(tags)
-                        for tag_Node in tags:
-                            if(len(tag_Node.firstChild.data)>0):
-                                tagname = tag_Node.firstChild.data
-                                t = Tag()
-
-                                print("recherche de : %s" % tagname)
-                                tag_in_db = Tag.objects.filter(name__exact=tagname)
-                                if(len(tag_in_db)==1): #déjà en db
-                                    print(bcolors.OKGREEN+"[Tag] already in DB : {tag}".format(tag=tagname)+bcolors.ENDC)
-                                    t_in_db = Tag.objects.get(name=tagname)
-                                    t = t_in_db
-                                elif(len(tag_in_db)==0): #pas encore en db    
-                                    print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)                                                                    
-                                    t.name = tagname
-                                    t.save()
-                                else:
-                                    print(bcolors.FAIL+"[Tag] Erreur lors de la correspondance des tags avec la DB:")
-                                    print("[Tag] Nombre de tags trouvés en db= {nb}".format(nb=len(tag_in_db))+bcolors.ENDC)                                    
-                                tmt = Tag_Movie_Festival()       
-                                tmt.festival = festival
-                                tmt.tag = t
-                                tmt.movie = m
-                                tmt.save()
-                        screenings = movie.getElementsByTagName("screening")
-                        print("[Screenings] found: {nb}".format(nb=len(screenings)))
-                        for screening_Node in screenings:
-                            if(screening_Node.childNodes[0].data):
-                                screening_datetime = datetime.datetime.strptime(screening_Node.childNodes[0].data, '%d/%m/%Y %H:%M')
-                                s = Screening() 
-                                screen = screening_Node.getAttribute('screen')
-                                print("recherche de : %s" % screen)
-                                #screen_in_db = Screen.objects.get(room=screen)
+                            nbactor = len(actor_Node)
+                            print("nb actor : {nb}".format(nb=nbactor))
+                            count_nbactor = 0
+                            for actor in actor_Node:                                
+                                character = actor.getAttribute("character")
+                                tmdb_id = actor.getAttribute("tmdb_id")
+                                name = actor.childNodes[0].data                            
+                                #print("[Actor] %s as %s" % (name, character))
+                                #check if actor is in db
+                                p = Person()
+                                person_in_db = Person.objects.filter(tmdb_id=tmdb_id)
                                 
-                                screen_in_db = Screen.objects.filter(room_name__exact=screen)
-                                print("screen_in_db: ")
-                                print(screen_in_db)
-                                print(len(screen_in_db))
-                                if(len(screen_in_db)==1):
-                                    #screen déjà en db
-                                    print(bcolors.OKGREEN+"[Screening:Screen] already in DB : {screen}".format(screen=screen)+bcolors.ENDC)
-                                    s_in_db = Screen.objects.get(room_name=screen)
-                                    s.screen = s_in_db
-                                elif(len(screen_in_db)==0):                                    
-                                    #screen pas dans la db
-                                    print(bcolors.WARNING+"[Screening:Screen] to add : {screen}".format(screen=screen)+bcolors.ENDC)
-                                    sc = Screen()
-                                    sc.room_name = screen
-                                    sc.save()
-                                    s.screen = sc
-                                else:                                    
-                                    print(bcolors.FAIL+"[Screening:Screen] Erreur lors de la correspondance des Screenings avec la DB:")
-                                    print("[Screening] Screening trouvés en db= {nb}".format(nb=len(screen_in_db))+bcolors.ENDC)
+                                count_nbactor = count_nbactor + 1
+                                if(len(person_in_db)==1):
+                                    print(bcolors.OKGREEN+"[Person] already in DB [{count_nbactor}/{nbactor}]: {name}                       ".format(name=name, count_nbactor=count_nbactor, nbactor=nbactor)+bcolors.ENDC, end='\r')
+                                    p = Person.objects.get(tmdb_id=tmdb_id)
                                     
-                                s.movie = m
-                                s.festival = festival
-                                s.screening_datetime = screening_datetime 
-                                s.save()                                                  
-                                                                                                
-                        #m.festival.add(festival)    
-                        m.save()
-                        movies_added += 1                
+                                elif(len(person_in_db)==0):
+                                    print(bcolors.WARNING+"[Person] to add [{count_nbactor}/{nbactor}]: {name}                       ".format(name=name, count_nbactor=count_nbactor, nbactor=nbactor)+bcolors.ENDC, end='\r')
+                                    p.name = name
+                                    p.tmdb_id = tmdb_id
+                                    p.profile_path = actor.getAttribute("profile_path")
+                                    p.gender = actor.getAttribute("gender")
+                                    p.save()                                    
+                                else:
+                                    print(bcolors.FAIL+"[Person] Erreur lors de la correspondance avec la DB:")
+                                    print("[Person] Nombre de Persons trouvés en db= {nb}".format(nb=len(person_in_db))+bcolors.ENDC)
+
+                                c = Cast()
+                                c.character = character
+                                c.order = actor.getAttribute("order")
+                                c.person = p
+                                c.movie = m
+                                c.save()                    
+                                
+                                
+                            print('', end='\n')
+                            crew_Node = tmdb.getElementsByTagName("crew")
+                            nbcrew = len(crew_Node)
+                            print("nb crew : {nb}".format(nb=nbcrew))
+                            count_nbcrew = 0
+                            for crew in crew_Node:                                
+                                job = crew.getAttribute("job")
+                                department = crew.getAttribute("department")
+                                tmdb_id = crew.getAttribute("tmdb_id")
+                                name = crew.childNodes[0].data
+                                count_nbcrew = count_nbcrew + 1
+                                
+                                p = Person()
+                                person_in_db = Person.objects.filter(tmdb_id=tmdb_id)
+                                
+                                if(len(person_in_db)==1):
+                                    print(bcolors.OKGREEN+"[Person] already in DB [{count_nbcrew}/{nbcrew}]: {name}                       ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
+                                    p = person_in_db[0]
+                                    
+                                elif(len(person_in_db)==0):
+                                    print(bcolors.WARNING+"[Person] to add [{count_nbcrew}/{nbcrew}]: {name}                              ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
+                                    p.name = name
+                                    p.tmdb_id = tmdb_id
+                                    p.profile_path = crew.getAttribute("profile_path")
+                                    p.gender = crew.getAttribute("gender")
+                                    p.save()
+                                    
+                                else:
+                                    print(bcolors.FAIL+"[Person] Erreur lors de la correspondance avec la DB:")
+                                    print("[Person] Nombre de Persons trouvés en db= {nb}".format(nb=len(person_in_db))+bcolors.ENDC)
+
+                                c = Crew()
+                                c.department = department
+                                c.job = job
+                                c.person = p
+                                c.movie = m
+                                c.save()                    
+                                                                
+                                
+                        else:
+                            print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    
+                            m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "")
+                        print('\n')   
+                    tags = movie.getElementsByTagName("tag")
+                    print("[Tags] found: {nb}".format(nb=len(tags)))
+       
+                    for tag_Node in tags:
+                        if(len(tag_Node.firstChild.data)>0):
+                            tagname = tag_Node.firstChild.data
+                            t = Tag()
+
+                            
+                            tag_in_db = Tag.objects.filter(name__exact=tagname)
+                            if(len(tag_in_db)==1): #déjà en db
+                                print(bcolors.OKGREEN+"[Tag] already in DB : {tag}".format(tag=tagname)+bcolors.ENDC)
+                                t_in_db = Tag.objects.get(name=tagname)
+                                t = t_in_db
+                            elif(len(tag_in_db)==0): #pas encore en db    
+                                print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)                                                                    
+                                t.name = tagname
+                                t.save()
+                            else:
+                                print(bcolors.FAIL+"[Tag] Erreur lors de la correspondance des tags avec la DB:")
+                                print("[Tag] Nombre de tags trouvés en db= {nb}".format(nb=len(tag_in_db))+bcolors.ENDC)                                    
+                            tmt = Tag_Movie_Festival()       
+                            tmt.festival = festival
+                            tmt.tag = t
+                            tmt.movie = m
+                            tmt.save()
+                    screenings = movie.getElementsByTagName("screening")
+                    print("[Screenings] found: {nb}".format(nb=len(screenings)))
+                    for screening_Node in screenings:
+                        if(screening_Node.childNodes[0].data):
+                            screening_datetime = datetime.datetime.strptime(screening_Node.childNodes[0].data, '%d/%m/%Y %H:%M')
+                            s = Screening() 
+                            screen = screening_Node.getAttribute('screen')
+                            
+                            #screen_in_db = Screen.objects.get(room=screen)
+                            
+                            screen_in_db = Screen.objects.filter(room_name__exact=screen)
+                            if(len(screen_in_db)==1):
+                                #screen déjà en db
+                                print(bcolors.OKGREEN+"[Screening:Screen] already in DB : {screen}".format(screen=screen)+bcolors.ENDC)
+                                s_in_db = Screen.objects.get(room_name=screen)
+                                s.screen = s_in_db
+                            elif(len(screen_in_db)==0):                                    
+                                #screen pas dans la db
+                                print(bcolors.WARNING+"[Screening:Screen] to add : {screen}".format(screen=screen)+bcolors.ENDC)
+                                sc = Screen()
+                                sc.room_name = screen
+                                sc.save()
+                                s.screen = sc
+                            else:                                    
+                                print(bcolors.FAIL+"[Screening:Screen] Erreur lors de la correspondance des Screenings avec la DB:")
+                                print("[Screening] Screening trouvés en db= {nb}".format(nb=len(screen_in_db))+bcolors.ENDC)
+                                
+                            s.movie = m
+                            s.festival = festival
+                            s.screening_datetime = screening_datetime 
+                            s.save()                                                  
+                                                                                            
+                    #m.festival.add(festival)    
+                    m.save()
+                    movies_added += 1                
                 print("\033[93m***end movie***\033[0m")
             print(bcolors.WARNING+"Nombre de films ajoutés à la DB : {nb}".format(nb=movies_added)+bcolors.ENDC)
             

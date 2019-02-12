@@ -6,32 +6,30 @@ from django.urls import reverse
 
 #this model represent a person acting or working on a movie
 class Person(models.Model):
-    name = models.CharField(max_length=200)
-    
+    name = models.CharField(max_length=200, default="")
+    tmdb_id = models.IntegerField(default=0)
+    profile_path = models.CharField(max_length=200,default="")
+    gender = models.IntegerField(default=0)   
+    #imdb_id = models.CharField(max_length=50, null=True)
+    #birthday = models.DateField(null=True)
+    #deathday= models.DateField(null=True)
+     
+    def getGender(self):
+        if(self.gender==0):
+            return "Unknown"
+        if(self.gender==1):
+            return "Female"
+        if(self.gender==2):
+            return "Male"
+        
     def __str__(self):
-        return self.name
+        return "{name}".format(name=self.name, tmdb_id=self.tmdb_id, gender=self.getGender(), profile_path=self.profile_path, pk=self.pk)
+    
 #this model represent the job of a person on a movie (acting or working)
 #    the flag is_actor is used to make difference between actor or crew
 #    if flag is_actor is true, then name is the name of the character
 #    if flag is_voice is true then is_actor must be true and the name is the character's voice
     
-class Job(models.Model):
-    name = models.CharField(max_length=200)
-    is_actor = models.BooleanField
-    is_voice = models.BooleanField
-    def __str__(self):
-        if(self.is_actor):
-            return "actor - {character}".format(character=self.name)
-        else:
-            return self.name
-        
-#this model represent the credits associating a person with a job
-class Credit(models.Model):
-    person = models.ManyToManyField('bifffidus.Person', related_name='person', blank=True)
-    job = models.ManyToManyField('bifffidus.Job', related_name='job', blank=True)
-    
-    def __str__(self):
-        return "{job} : {person}".format(job=str(self.job), person=str(self.person))
     
 class Genre(models.Model):
     name = models.CharField(max_length=200)
@@ -92,7 +90,8 @@ class Movie(models.Model):
     
     #one movie can have 0..n genres, and genre can regroup 0..n movies
     genre = models.ManyToManyField('bifffidus.Genre', related_name='genre', blank=True)
-    credit = models.ManyToManyField('bifffidus.Credit', related_name='credit', blank=True)
+    #cast = models.ManyToManyField('bifffidus.Cast', related_name='cast', blank=True)
+    #crew = models.ManyToManyField('bifffidus.Crew', related_name='crew', blank=True)
     production_company = models.ManyToManyField('bifffidus.Production_Company', related_name='production_company', blank=True)
     country = models.ManyToManyField('bifffidus.Country', related_name='country', blank=True)
     spoken_language = models.ManyToManyField('bifffidus.Spoken_Language', related_name='spoken_language', blank=True)
@@ -105,6 +104,24 @@ class Movie(models.Model):
     
     def __str__(self):
         return self.title
+
+class Crew(models.Model):
+    department = models.CharField(max_length=200, default="")
+    job = models.CharField(max_length=200, default="crew")
+    person = models.ForeignKey('bifffidus.Person', related_name='crew_person', on_delete=models.CASCADE, null=True)
+    movie = models.ForeignKey(Movie, related_name="movie_crew", on_delete=models.CASCADE, null=True)
+    
+    def __str__(self):        
+        return "{department} : {job} : {person}".format(department=self.department,job=self.job, person=self.person)
+    
+class Cast(models.Model):
+    order = models.IntegerField(default=0)
+    character= models.CharField(max_length=100, default="")
+    person = models.ForeignKey('bifffidus.Person', related_name='cast_person', on_delete=models.CASCADE, null=True)    
+    movie = models.ForeignKey(Movie, related_name="movie_cast", on_delete=models.CASCADE, null=True)    
+    
+    def __str__(self):        
+        return "{character} [{order}]: {person} : {movie}".format(character=self.character,order=self.order, person=self.person, movie=self.movie)
 
 class Place(models.Model):
     name = models.CharField(max_length=200)
@@ -129,7 +146,7 @@ class Festival(models.Model):
     title = models.CharField(max_length=200, unique=True)
     start_date = models.DateField(default = timezone.now)
     end_date = models.DateField(default= timezone.now)
-    place = models.ForeignKey('bifffidus.Place', related_name="place", on_delete=models.DO_NOTHING, null=True)
+    place = models.ManyToManyField('bifffidus.Place', related_name="place", blank=True)
 
     def get_absolute_url(self):            
         return reverse('festival_detail', args=[self.id])  
@@ -143,7 +160,7 @@ class Festival(models.Model):
 class Screening(models.Model):
     #date, heure début, screen, movie
     screening_datetime =models.DateTimeField(default=timezone.now)
-    movie = models.ForeignKey(Movie, related_name="movie", on_delete=models.CASCADE, null=True)
+    movie = models.ForeignKey(Movie, related_name="movie_screening", on_delete=models.CASCADE, null=True)
     screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.CASCADE, null=True)
     festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.CASCADE, null=True)
     is_movie = models.BooleanField(default=True)   

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Festival, Screen, Screening
+from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew
 import datetime
 from bifffidus.models import Tag_Movie_Festival
 
@@ -28,7 +28,9 @@ def movie_detail(request, pk):
     url_img="https://image.tmdb.org/t/p/w185"
     screenings = Screening.objects.filter(movie_id=pk)
     tags = Tag_Movie_Festival.objects.filter(movie_id=pk)
-    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
+    casting = Cast.objects.filter(movie_id=pk)
+    crew = Crew.objects.filter(movie_id=pk)
+    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags, 'casting' : casting, 'crew' : crew})
 
 def movie_by_festival(request, pk):
     sql = '''   SELECT * 
@@ -57,3 +59,9 @@ def movie_by_date(request, year,  month,  day):
     screenings = Screening.objects.filter(screening_datetime__date=datetime.date(year, month, day))
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
    
+def person_detail(request, pk):
+    person = get_object_or_404(Person, pk=pk)
+    cast = Cast.objects.filter(person_id=pk)
+    crew = Crew.objects.filter(person_id=pk)
+    
+    return render(request, 'bifffidus/person_detail.html', {'person': person, 'cast' : cast, 'crew' : crew})

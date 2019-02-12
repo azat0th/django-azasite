@@ -7,4 +7,5 @@ db.sqlite3
 .pydevproject
 *.xml
 scrapmovies.py
-/img_post/Cthulhu_blood.png
+/img_post
+/bifff.xml
