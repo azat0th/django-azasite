@@ -1,0 +1,8 @@
+{% extends 'bifffidus/base.html' %}
+{% block content %}
+    {% for tag in tags %}
+        <div class="border text-light">
+	        <a  href="{% url 'tag_detail' pk=tag.pk %}"><h2 class=''>{{ tag.name }}</h2></a>
+        </div>
+    {% endfor %}
+{% endblock content %}

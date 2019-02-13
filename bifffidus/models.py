@@ -99,6 +99,13 @@ class Movie(models.Model):
     
     objects = MovieManager()
     
+    def get_poster_image_url(self):
+        url = "/static/img/movie.no-img.45.png"
+        if(self.poster_path):
+            url_img="https://image.tmdb.org/t/p/w45"
+            url = url_img + self.poster_path
+        return url
+    
     def get_absolute_url(self):            
         return reverse('movie_detail', args=[self.id])    
     

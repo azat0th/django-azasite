@@ -18,7 +18,7 @@
 		<p>Original title: {{ movie.original_title }}</p>
 		<p>Genres:
 		{% for g in movie.genre.all %}
-			[{{ g.name }}]
+			<a href="{% url 'genre_detail' pk=g.id %}">[{{ g.name }}]</a>
 		{% endfor %}
 		</p>
 		<p>Production Companies: 
@@ -28,7 +28,7 @@
 		</p>
 		<p>Countries: 
 		{% for c in movie.country.all %}
-			[{{ c.name }}]
+			<a href="{% url 'country_detail' pk=c.id %}">[{{ c.name }}]</a>
 		{% endfor %}
 		</p>
 		<p>Spoken Languages :

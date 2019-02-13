@@ -9,3 +9,5 @@ db.sqlite3
 scrapmovies.py
 /img_post
 /bifff.xml
+*.backup
+/bifffidus/migration

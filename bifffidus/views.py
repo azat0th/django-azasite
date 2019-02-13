@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew
+from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Tag_Movie_Festival
 import datetime
 from bifffidus.models import Tag_Movie_Festival
 
@@ -18,6 +18,10 @@ def get_dates_by_festival(pk):
     return datelist
 
 # Create your views here.
+
+def main_page(request):
+    return render(request, 'bifffidus/main_page.html')
+
 def movie_list(request):
     movies = Movie.objects.all
     url_img="https://image.tmdb.org/t/p/w92"
@@ -58,10 +62,57 @@ def festival_detail(request, pk):
 def movie_by_date(request, year,  month,  day):      
     screenings = Screening.objects.filter(screening_datetime__date=datetime.date(year, month, day))
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
-   
+
+def person_list(request):
+    persons = Person.objects.order_by('name').all
+    return render(request, 'bifffidus/person_list.html', {'persons': persons})
+
 def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)
     cast = Cast.objects.filter(person_id=pk)
     crew = Crew.objects.filter(person_id=pk)
-    
     return render(request, 'bifffidus/person_detail.html', {'person': person, 'cast' : cast, 'crew' : crew})
+
+def tag_list(request):
+    tags = Tag.objects.order_by('name').all
+    return render(request, 'bifffidus/tag_list.html', {'tags': tags })
+
+def tag_detail(request, pk):
+    tag = get_object_or_404(Tag, pk=pk)
+    tfms = Tag_Movie_Festival.objects.filter(tag__id=pk)
+    return render(request, 'bifffidus/tag_detail.html', {'tag':tag, 'tfms':tfms})
+
+def country_list(request):
+    countries = Country.objects.order_by('name').all
+    return render(request, 'bifffidus/country_list.html', {'countries': countries})
+
+def country_detail(request,pk):
+    country = get_object_or_404(Country, pk=pk)
+    movies = Movie.objects.filter(country__id=pk).order_by('title')
+    return render(request, 'bifffidus/country_detail.html', {'country':country, 'movies': movies})
+
+def genre_list(request):
+    genres = Genre.objects.order_by('name').all
+    return render(request, 'bifffidus/genre_list.html', {'genres': genres})
+
+def genre_detail(request,pk):
+    genre = get_object_or_404(Genre, pk=pk)
+    movies = Movie.objects.filter(genre__id=pk).order_by('title')
+    return render(request, 'bifffidus/genre_detail.html', {'genre':genre, 'movies': movies})
+
+'''
+
+def tag_list(request):
+def country_list(request):
+def genre_list(request):
+def department_list(request):
+def job_list(request):
+def person_list(request):
+
+def movie_by_tag(request,pk):
+def movie_by_country(request, pk):
+def movie_by_genre(request, pk):
+
+rajouter des fields date de création, mise à jour sur movie, festival, person
+
+'''

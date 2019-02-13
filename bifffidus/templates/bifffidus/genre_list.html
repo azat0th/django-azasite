@@ -1,0 +1,8 @@
+{% extends 'bifffidus/base.html' %}
+{% block content %}
+    {% for genre in genres %}
+        <div class="border text-light">
+	        <a  href="{% url 'genre_detail' pk=genre.pk %}"><h2 class=''>{{ genre.name }}</h2></a>
+        </div>
+    {% endfor %}
+{% endblock content %}

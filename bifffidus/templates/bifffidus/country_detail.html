@@ -1,0 +1,12 @@
+{% extends 'bifffidus/base.html' %}
+
+{% block content %}
+    <div class="post text-light border">       
+        <h1 class="blog-title">{{ country.name }}</h1>
+	<ul>
+   	{% for movie in movies %}
+   		<li><a href="{% url 'movie_detail' pk=movie.pk %}">[{{ movie.title }}]</a></li>
+   	{% endfor %}
+   	</ul>   	
+    </div>
+{% endblock %}

@@ -10,20 +10,29 @@
 			{% endfor %}
 		{% endfor %}	            
 	</div>
+	
 	<a href="{% url 'movie_by_festival' pk=festival.pk %}">Festival Movie List</a>
     {% regroup screenings by screening_datetime|date:"D d-m-Y" as screenings_by_day %}
+    
     <div class="border text-light">
-    	    
     {% for screening_list in screenings_by_day %}
     	<h4>
     	<a  href="{% url 'movie_by_date' year=screening_list.1.0.screening_datetime|date:"Y" month=screening_list.1.0.screening_datetime|date:"m" day=screening_list.1.0.screening_datetime|date:"d" %}">
     	{{screening_list.grouper}} ({{ screening_list.list|length }})
     	</a>
     	</h4>
-   
-        {% for screening in screening_list.list %}
-	       	<a  href="{% url 'movie_detail' pk=screening.movie_id %}">{{screening.screening_datetime}} : {{screening.movie.title}}<img src="{{url_img}}{{ screening.movie.poster_path }}" alt="{{ screening.movie.title }}" class="img-thumbnail  mx-auto d-block"/></a>
-        {% endfor %}
+			<table>
+        	{% for screening in screening_list.list %}
+        		<tr>
+	       			<td>{{screening.screening_datetime|date:"H:i"}}</td> 
+	       			<td>{{screening.screen.room_name}}</td>
+	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class=""><img src="{{ screening.movie.get_poster_image_url }}" alt="{{ screening.movie.title }}" class=""/></a></td>
+	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title}}</a></td>
+	       		</a>
+	       		</tr>
+		       		       	
+        	{% endfor %}
+        	</table>
         	
     {% endfor %}
     </div>
