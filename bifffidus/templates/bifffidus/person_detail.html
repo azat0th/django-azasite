@@ -8,12 +8,12 @@
         <p>tmdb_id: {{ person.tmdb_id }}</p>
 	<ul>
    	{% for c in cast %}
-   		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{ c.person }}] : [{{c.character}}]</li>
+   		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{c.character}}]</li>
    	{% endfor %}
    	</ul>
    	<ul>
    	{% for c in crew %}
-   		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{ c.person }}] : [{{c.department}}] : [{{c.job}}]</li>
+   		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{c.department}}] : [{{c.job}}]</li>
    	{% endfor %}
    	</ul>
     </div>
