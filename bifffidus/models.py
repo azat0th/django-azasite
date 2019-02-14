@@ -13,7 +13,9 @@ class Person(models.Model):
     #imdb_id = models.CharField(max_length=50, null=True)
     #birthday = models.DateField(null=True)
     #deathday= models.DateField(null=True)
-     
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+        
     def getGender(self):
         if(self.gender==0):
             return "Unknown"
@@ -59,9 +61,10 @@ class MovieManager(models.Manager):
     
     def create_movie(self,title,imdb_id,tmdb_id,overview,
                      runtime,tagline,backdrop_path,
-                     poster_path,original_language,original_title):
+                     poster_path,original_language,original_title,
+                     release_date):
         movie = self.create(title=title)        
-        movie.title = title
+        #movie.title = title
         movie.imdb_id = imdb_id
         movie.tmdb_id = tmdb_id
         movie.overview = overview
@@ -71,6 +74,8 @@ class MovieManager(models.Manager):
         movie.poster_path = poster_path
         movie.original_language = original_language
         movie.original_title = original_title
+        if(release_date != 0):
+            movie.release_date = release_date
         
         return movie
 
@@ -96,9 +101,11 @@ class Movie(models.Model):
     country = models.ManyToManyField('bifffidus.Country', related_name='country', blank=True)
     spoken_language = models.ManyToManyField('bifffidus.Spoken_Language', related_name='spoken_language', blank=True)
     #festival = models.ManyToManyField('bifffidus.Festival', related_name='festival', blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     
     objects = MovieManager()
-    
+            
     def get_poster_image_url(self):
         url = "/static/img/movie.no-img.45.png"
         if(self.poster_path):
@@ -155,6 +162,9 @@ class Festival(models.Model):
     end_date = models.DateField(default= timezone.now)
     place = models.ManyToManyField('bifffidus.Place', related_name="place", blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+        
     def get_absolute_url(self):            
         return reverse('festival_detail', args=[self.id])  
     

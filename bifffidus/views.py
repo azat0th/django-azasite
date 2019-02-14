@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Tag_Movie_Festival
 import datetime
-from bifffidus.models import Tag_Movie_Festival
+from .models import Tag_Movie_Festival
+from django.core.paginator import Paginator
 
 def get_dates_by_festival(pk):    
     screenings = Screening.objects.filter(festival_id=pk)
@@ -23,9 +24,16 @@ def main_page(request):
     return render(request, 'bifffidus/main_page.html')
 
 def movie_list(request):
-    movies = Movie.objects.all
+    movie_list = Movie.objects.order_by('title').all()
+    paginator = Paginator(movie_list, 25) #show 25 movies
+    nb_movies = len(movie_list)
+    page = request.GET.get('page')
+    if(page is None):
+        page = 1    
+    movies = paginator.page(page)
+    #movies = movie_list
     url_img="https://image.tmdb.org/t/p/w92"
-    return render(request,  'bifffidus/movie_list.html',  {'movies': movies, 'url_img' : url_img,})
+    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img,})
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
@@ -50,7 +58,7 @@ def movie_by_festival(request, pk):
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
 
 def festival_list(request):
-    festivals = Festival.objects.all
+    festivals = Festival.objects.order_by('start_date').all
     return render(request, 'bifffidus/festival_list.html', {'festivals': festivals})
 
 def festival_detail(request, pk):
@@ -64,8 +72,16 @@ def movie_by_date(request, year,  month,  day):
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
 
 def person_list(request):
-    persons = Person.objects.order_by('name').all
-    return render(request, 'bifffidus/person_list.html', {'persons': persons})
+    person_list = Person.objects.order_by('name').all()
+    
+    paginator = Paginator(person_list, 25) #show 25 movies
+    nb_persons = len(person_list)
+    page = request.GET.get('page')
+    if(page is None):
+        page = 1    
+    persons = paginator.page(page)
+    
+    return render(request, 'bifffidus/person_list.html', {'persons': persons, 'nb_persons': nb_persons})
 
 def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)

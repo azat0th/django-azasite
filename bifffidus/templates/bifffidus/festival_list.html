@@ -2,7 +2,7 @@
 {% block content %}
     {% for festival in festivals %}
         <div class="border text-light">
-	        <a  href="{% url 'festival_detail' pk=festival.pk %}"><h2 class='blog-title'>{{ festival.title }}</h2></a>
+	        <a  href="{% url 'festival_detail' pk=festival.pk %}"><h2 class='blog-title'>{{ festival.title }} {{ festival.start_date|date:"Y" }}</h2></a>
         </div>
     {% endfor %}
 {% endblock content %}

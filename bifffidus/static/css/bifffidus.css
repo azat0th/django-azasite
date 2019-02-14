@@ -31,9 +31,9 @@ h1.blog-header-logo {
     margin-left: 40px;
 }
 
-h1, h2, h3, h4 {
-   /* font-family: 'Limelight', cursive;
-    color: orange;*/
+h1, h2, h3, h4, h5 {
+   /* font-family: 'Limelight', cursive;*/
+    color: orange;
 }
 
 .post-form textarea, .post-form input {

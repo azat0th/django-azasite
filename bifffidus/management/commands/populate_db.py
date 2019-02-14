@@ -43,6 +43,7 @@ from bifffidus.models import Person, Country, Cast, Crew
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -178,8 +179,11 @@ class Command(BaseCommand):
                             
                             
                             if(tmdb.getElementsByTagName('release_date')[0].hasChildNodes()):
-                                release_date = tmdb.getElementsByTagName('release_date')[0].childNodes[0].data
-                                m.release_date = release_date
+                                release_date_str = tmdb.getElementsByTagName('release_date')[0].childNodes[0].data
+                                release_date = 0
+                                if(len(release_date_str)>8):
+                                    release_date = datetime.datetime.strptime(release_date_str, '%Y-%m-%d')
+                                #m.release_date = release_date
                             
                             runtime = 0
                             if(tmdb.getElementsByTagName('runtime')[0].hasChildNodes()):
@@ -193,7 +197,7 @@ class Command(BaseCommand):
                                 tagline = tmdb.getElementsByTagName('tagline')[0].childNodes[0].data
                                 #m.tagline = tagline
                             
-                            m = Movie.objects.create_movie(title, imdb_id, tmdb_id, overview, runtime, tagline, backdrop_path, poster_path, original_language, original_title)
+                            m = Movie.objects.create_movie(title, imdb_id, tmdb_id, overview, runtime, tagline, backdrop_path, poster_path, original_language, original_title, release_date)
                             
                             m.save()   
                             genres_Node = tmdb.getElementsByTagName("genre")
@@ -352,7 +356,7 @@ class Command(BaseCommand):
                                 
                         else:
                             print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    
-                            m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "")
+                            m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "",0)
                         print('\n')   
                     tags = movie.getElementsByTagName("tag")
                     print("[Tags] found: {nb}".format(nb=len(tags)))
