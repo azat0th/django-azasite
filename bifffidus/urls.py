@@ -10,6 +10,7 @@ urlpatterns = [
 
     path('bifffidus/movielist/<int:year>/<int:month>/<int:day>/', views.movie_by_date, name='movie_by_date'),
     path('bifffidus/movielist/<int:pk>/', views.movie_by_festival, name='movie_by_festival'),
+    path('bifffidus/movie/', views.movie_list, name='movie_list'),
     
     path('bifffidus/person/', views.person_list, name='person_list'),
     path('bifffidus/person/<int:pk>', views.person_detail, name='person_detail'),
