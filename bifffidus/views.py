@@ -21,7 +21,11 @@ def get_dates_by_festival(pk):
 # Create your views here.
 
 def main_page(request):
-    return render(request, 'bifffidus/main_page.html')
+    nb_movie = Movie.objects.all().count()
+    nb_person = Person.objects.all().count()
+    nb_festival = Festival.objects.all().count()
+     
+    return render(request, 'bifffidus/main_page.html',{'nb_movie':nb_movie, 'nb_person': nb_person, 'nb_festival': nb_festival })
 
 def movie_list(request):
     movie_list = Movie.objects.order_by('title').all()

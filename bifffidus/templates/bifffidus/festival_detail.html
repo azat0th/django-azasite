@@ -26,8 +26,8 @@
         		<tr>
 	       			<td>{{screening.screening_datetime|date:"H:i"}}</td> 
 	       			<td>{{screening.screen.room_name}}</td>
-	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class=""><img src="{{ screening.movie.get_poster_image_url }}" alt="{{ screening.movie.title }}" class=""/></a></td>
-	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title}}</a></td>
+	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class=""><img src="{{ screening.movie.get_poster_image_url_45 }}" alt="{{ screening.movie.title }}" class=""/></a></td>
+	       			<td><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a></td>
 	       		</a>
 	       		</tr>
 		       		       	

@@ -1,30 +1,16 @@
-.bifffidus-banner {
+.bifff-banner {
 	background-color: black;
-	width: 100%;
 }
 
-.blog-bg {
+.bifff-bg {
     background-color: black;
 }
 
-.blog-bg-rear {
-    background-color: black;
-}
-
-h1.blog-header-logo {
-    color: orange;
-    font-family: 'Shojumaru';
-}
-
-.blog-title {
-    color: orange;
-    font-family:'Changa';
-}
-
-.page-header {
-    background-color: #ff9400;
-    margin-top: 0;
-    padding: 20px 20px 20px 40px;
+.container {
+  position: relative;
+  text-align: center;
+  color: red;
+  font-family: 'Changa';
 }
 
 .content {
@@ -32,31 +18,50 @@ h1.blog-header-logo {
 }
 
 h1, h2, h3, h4, h5 {
-   /* font-family: 'Limelight', cursive;*/
-    color: orange;
+    font-family: 'Changa', cursive;
+    color: red;
 }
 
-.post-form textarea, .post-form input {
-    width: 100%;
+.bifff-menu {
+	color: Red;
+	font-family: 'Shojumaru';
+}
+.label {  	
+  	padding: 8px;
+  	font-family: 'Changa';
+	color : red;
+	background-color: black;
 }
 
-.comment {
-    margin: 20px 0px 20px 20px;
+/* Bottom right text */
+.bottom-right {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
 }
 a {
-    color: Orange;
+    color: Red;
+    
 }
 a:link {
-    color: DarkOrange;
+    color: Red;
    
 }
 a:visited {
-    color: DarkOrange;
+    color: Red;
 }
 a:hover {
     color: Yellow;
     text-decoration: none;
 }
+
+ul {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+}
+
+
 
 img {
     max-width: 100%;

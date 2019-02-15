@@ -3,8 +3,14 @@
 
 {% block content %}
 
-	<div class="text-light">
-		<img src="{% static "img/work_in_progress.png" %}" alt="Work in Progress Sign">
+	<div class="">
+	 	<div class="btn-group">
+  			<span class="label info border border-danger rounded-top">{{nb_festival}} festivals</span>
+  			<span class="label info border border-danger rounded-top">{{nb_movie}} movies</span>
+  			<span class="label info border border-danger rounded-top">{{nb_person}} persons</span>
+		</div> 
+
+		<img class="rounded img-fluid" src="{% static "img/work_in_progress.png" %}" alt="Work in Progress Sign">
 	</div>
 
 {% endblock content %}

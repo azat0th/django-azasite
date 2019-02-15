@@ -1,7 +1,7 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
     {% for country in countries %}
-        <div class="border text-light">
+        <div class="border border-danger">
 	        <a  href="{% url 'country_detail' pk=country.pk %}"><h2 class=''>{{ country.name }}</h2></a>
         </div>
     {% endfor %}
