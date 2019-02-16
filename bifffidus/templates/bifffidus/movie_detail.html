@@ -12,8 +12,8 @@
 		<p>Release Date: {{ movie.release_date }}</p>
 		<p>Runtime: {{ movie.runtime }}</p>
 		<p>Tagline: {{ movie.tagline }}</p>
-		<p>Backdrop Path: {{ movie.backdrop_path }}</p>
-		<p>Poster Path: {{ movie.poster_path }}</p>
+		<!--p>Backdrop Path: {{ movie.backdrop_path }}</p-->
+		<!--p>Poster Path: {{ movie.poster_path }}</p-->
 		<p>Original Language: {{ movie.original_language }}</p>
 		<p>Original title: {{ movie.original_title }}</p>
 		<p>Genres:
@@ -56,10 +56,11 @@
 		{% for screening in screenings %}
 			<p>{{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>
 		{% endfor %}
-		
-		Tags : 
-		{% for tag in tags %}
-			<p>{{ tag.tag }}</p>
-		{% endfor %}
+		{% if tags|length > 0 %}
+			Tags : 
+			{% for tag in tags %}
+				<p>{{ tag.tag }}</p>
+			{% endfor %}
+		{% endif %}
     </div>
 {% endblock %}
