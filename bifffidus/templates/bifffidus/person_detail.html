@@ -11,10 +11,16 @@
    		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{c.character}}]</li>
    	{% endfor %}
    	</ul>
-   	<ul>
-   	{% for c in crew %}
-   		<li><a href="{% url 'movie_detail' pk=c.movie.pk %}">[{{ c.movie.title }}]</a> : [{{c.department}}] : [{{c.job}}]</li>
+   	{% regroup crew by movie as crew_by_movie %}   	 
+   	
+   	{% for c in crew_by_movie %}
+   		<a href="{% url 'movie_detail' pk=c.grouper.pk %}">{{c.grouper|title}}</a>
+   		<ul>
+   		{% for job in c.list %}   
+			<li>[{{ job.job.department }}]:[{{ job.job.jobname }}]</li>
+   		{% endfor%}
+   			</ul>
    	{% endfor %}
-   	</ul>
+   
     </div>
 {% endblock %}

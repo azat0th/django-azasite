@@ -1,5 +1,6 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
+	<h5>{{festivals|length}} festivals found</h5>
     {% for festival in festivals %}
         <div class="border border-danger text-center">
 	        <h2><a href="{% url 'festival_detail' pk=festival.pk %}">{{ festival.title }} {{ festival.start_date|date:"Y" }}</a></h2>

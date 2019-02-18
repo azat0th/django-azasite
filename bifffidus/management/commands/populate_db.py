@@ -37,7 +37,7 @@ from xml.dom import minidom
 from django.core.management.base import BaseCommand, CommandError
 import datetime
 from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag,\
-    Tag_Movie_Festival
+    Tag_Movie_Festival, Job
 from bifffidus.models import Genre, Spoken_Language, Production_Company 
 from bifffidus.models import Person, Country, Cast, Crew
 from django.utils import timezone
@@ -321,8 +321,19 @@ class Command(BaseCommand):
                             print("nb crew : {nb}".format(nb=nbcrew))
                             count_nbcrew = 0
                             for crew in crew_Node:                                
-                                job = crew.getAttribute("job")
+                                jobname = crew.getAttribute("job")
                                 department = crew.getAttribute("department")
+                                
+                                job_in_db = Job.objects.filter(jobname=jobname)
+                                j = Job()
+                                if(len(job_in_db)==1):
+                                    j = job_in_db[0]
+                                elif(len(job_in_db)==0):
+                                    j.jobname = jobname
+                                    j.department = department
+                                    j.save() 
+                                else:
+                                    print(bcolors.FAIL+"[Job] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
                                 tmdb_id = crew.getAttribute("tmdb_id")
                                 name = crew.childNodes[0].data
                                 count_nbcrew = count_nbcrew + 1
@@ -347,8 +358,8 @@ class Command(BaseCommand):
                                     print("[Person] Nombre de Persons trouvés en db= {nb}".format(nb=len(person_in_db))+bcolors.ENDC)
 
                                 c = Crew()
-                                c.department = department
-                                c.job = job
+                                
+                                c.job = j
                                 c.person = p
                                 c.movie = m
                                 c.save()                    

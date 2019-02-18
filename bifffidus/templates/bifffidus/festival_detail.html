@@ -19,7 +19,7 @@
     <div class=" text-light ">
     	<h4>
     	<p><a  href="{% url 'movie_by_date' year=screening_list.1.0.screening_datetime|date:"Y" month=screening_list.1.0.screening_datetime|date:"m" day=screening_list.1.0.screening_datetime|date:"d" %}">
-    	{{screening_list.grouper}} ({{ screening_list.list|length }} screenings)
+    	{{screening_list.grouper|title}} ({{ screening_list.list|length }} screenings)
     	</a></p>
     	</h4>
 		<div class="row">

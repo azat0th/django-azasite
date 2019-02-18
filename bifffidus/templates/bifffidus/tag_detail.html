@@ -2,12 +2,17 @@
 
 {% block content %}
     <div class="post border border-danger">       
-        <h1 class="">{{ tag.name }}</h1>
+        <h1 class="">{{ tag.name|title }}</h1>
         <p>{{tfms|length  }} movies found</p>
-	<ul>
-   	{% for tfm in tfms %}
-   		<li class="border border-danger"><h4><a href="{% url 'movie_detail' pk=tfm.movie.pk %}">{{ tfm.movie.title|title }}</a></h4></li>
-   	{% endfor %}
-   	</ul>   	
+        {% regroup tfms by festival as tfmovies_by_festival %}
+        
+        {% for tfm in tfmovies_by_festival %}
+        <h3>{{tfm.grouper}}({{ tfm.list|length }} movies)</h3> 
+        	{% for tfmovie in tfm.list %}
+				<ul>	   	
+   					<li class="border border-danger"><h5><a href="{% url 'movie_detail' pk=tfmovie.movie.pk %}">{{ tfmovie.movie.title|title }}</a></h5></li>   	
+   				</ul>
+   			{% endfor %}
+   		{% endfor %}
     </div>
 {% endblock %}

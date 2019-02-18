@@ -45,7 +45,7 @@ def movie_detail(request, pk):
     screenings = Screening.objects.filter(movie_id=pk)
     tags = Tag_Movie_Festival.objects.filter(movie_id=pk)
     casting = Cast.objects.filter(movie_id=pk)
-    crew = Crew.objects.filter(movie_id=pk)
+    crew = Crew.objects.filter(movie_id=pk)    
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags, 'casting' : casting, 'crew' : crew})
 
 def movie_by_festival(request, pk):

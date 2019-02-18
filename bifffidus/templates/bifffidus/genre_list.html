@@ -1,6 +1,6 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
-	Genres : {{genres.count}}
+	<h5>{{genres.count}} genres found</h5>
     {% for genre in genres %}
         <div class="border border-danger">
 	        <h3 class=''><a  href="{% url 'genre_detail' pk=genre.pk %}">{{ genre.name|title }}</a></h3>

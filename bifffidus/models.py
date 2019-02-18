@@ -124,15 +124,21 @@ class Movie(models.Model):
     
     def __str__(self):
         return self.title
-
+    
+class Job(models.Model):
+    department = models.CharField(max_length=200, default="unknown")
+    jobname = models.CharField(max_length=200, default="unknown")
+    def __str__(self):        
+        return "{job} : {department}".format(department=self.department,job=self.jobname)
+    
+    
 class Crew(models.Model):
-    department = models.CharField(max_length=200, default="")
-    job = models.CharField(max_length=200, default="crew")
+    job = models.ForeignKey('bifffidus.Job', related_name='job_person', on_delete=models.CASCADE, null=False)
     person = models.ForeignKey('bifffidus.Person', related_name='crew_person', on_delete=models.CASCADE, null=True)
-    movie = models.ForeignKey(Movie, related_name="movie_crew", on_delete=models.CASCADE, null=True)
+    movie = models.ForeignKey(Movie, related_name="movie_crew", on_delete=models.CASCADE, null=True)    
     
     def __str__(self):        
-        return "{department} : {job} : {person}".format(department=self.department,job=self.job, person=self.person)
+        return "{department} : {job} : {person} : {movie}".format(department=self.job.department,job=self.job.jobname, person=self.person, movie=self.movie.title)
     
 class Cast(models.Model):
     order = models.IntegerField(default=0)

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import Movie, Festival, Screen, Screening, Place, Genre, Person, Country, Production_Company,Spoken_Language
-from bifffidus.models import Tag_Movie_Festival, Tag, Crew, Cast
+from bifffidus.models import Tag_Movie_Festival, Tag, Crew, Cast, Job
 
 admin.site.register(Movie)
 admin.site.register(Place)
@@ -18,3 +18,4 @@ admin.site.register(Production_Company)
 admin.site.register(Spoken_Language)
 admin.site.register(Tag)
 admin.site.register(Tag_Movie_Festival)
+admin.site.register(Job)

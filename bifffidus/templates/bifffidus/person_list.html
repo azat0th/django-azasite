@@ -1,6 +1,6 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
-    <h5>Nombre de personnes : {{nb_persons}}</h5>
+    <h5>{{nb_persons}} persons found</h5>
 
 
 	<nav aria-label="Person List Navigation">
@@ -19,7 +19,7 @@
 
     {% for person in persons %}
         <div class="border border-danger">
-	        <a  href="{% url 'person_detail' pk=person.pk %}"><h3 class=''>{{ person.name }}</h2></a>
+	        <h3><a  href="{% url 'person_detail' pk=person.pk %}">{{ person.name }}</a></h3>
         </div>
     {% endfor %}
 	

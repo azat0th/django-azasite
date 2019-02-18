@@ -5,7 +5,7 @@
         <h1 class="blog-title">{{ movie.title }}</h1>
         <img src="{{url_img}}{{ movie.poster_path }}" class="img-thumbnail  mx-auto d-block"/>
         <p>        
-        	<a href="{{ movie.imdb_id }}">IMDB link</a> 
+        	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">IMDB link</a> 
         	<a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id }}">TMDB link</a>
 		</p>
 		<p>Overview: {{ movie.overview }}</p>
@@ -59,7 +59,7 @@
 		{% if tags|length > 0 %}
 			Tags : 
 			{% for tag in tags %}
-				<p>{{ tag.tag }}</p>
+				<p><a href="{% url 'tag_detail' pk=tag.tag.pk %}">{{ tag.tag }}</a></p>
 			{% endfor %}
 		{% endif %}
     </div>
