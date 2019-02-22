@@ -11,3 +11,4 @@ scrapmovies.py
 /bifff.xml
 *.backup
 /bifffidus/migration
+*.sh

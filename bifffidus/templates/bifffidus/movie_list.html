@@ -1,7 +1,17 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
-<h5>{{nb_movies}} movies found</h5>
-    		
+
+	<form action="/bifffidus/movie/search/" method="get">
+   		{% csrf_token %}
+   		{{ form }}
+   		<input type="submit" value="Submit">
+	</form>
+	
+	<p>{{ message }}</p>
+	
+	<h5>{{nb_movies}} movies found</h5>
+    
+    {% if movies and not message %}		
 	<nav aria-label="Movie List Navigation">
 	  <ul class="pagination">
 	  	{% if movies.has_previous %}
@@ -15,7 +25,8 @@
 	    {% endif %}
 	  </ul>
 	</nav>
-    	
+	{% endif %}
+
     {% for movie in movies %}
         <div class="border border-danger text-light row">
         	<div class="col-md-4">
@@ -25,6 +36,13 @@
 		        <h4><a  href="{% url 'movie_detail' pk=movie.pk %}">{{ movie.title|title }} ({{movie.release_date|date:"Y"}})</a></h4>
         	    <p> {{ movie.tagline }}</p>
         	    <p>
+        	    {% for c in movie.crew.all %}
+        	    	{% if c.job.id is director.id %}
+        	    		[{{ c.person.name }}]
+        	    	{% endif %}
+        	    {% endfor %}
+        	    </p>
+        	   	<p>
         	    {% for genre in movie.genre.all %}
         	    	[{{genre.name}}]
         	    {% endfor%}
@@ -33,6 +51,7 @@
         </div>
     {% endfor %}
     
+    {% if movies and not message %}
 	<nav aria-label="Movie List Navigation">
 	  <ul class="pagination">
 	  	{% if movies.has_previous %}
@@ -46,5 +65,7 @@
 	    {% endif %}
 	  </ul>
 	</nav>
-
+	{% endif %}
+	
+	
 {% endblock content %}

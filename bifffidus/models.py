@@ -94,9 +94,9 @@ class Movie(models.Model):
     original_title = models.CharField(max_length=250,default="")
     
     #one movie can have 0..n genres, and genre can regroup 0..n movies
-    genre = models.ManyToManyField('bifffidus.Genre', related_name='genre', blank=True)
-    #cast = models.ManyToManyField('bifffidus.Cast', related_name='cast', blank=True)
-    #crew = models.ManyToManyField('bifffidus.Crew', related_name='crew', blank=True)
+    genre = models.ManyToManyField('bifffidus.Genre', related_name='movie_genre', blank=True)
+    cast = models.ManyToManyField('bifffidus.Cast', related_name='movie_cast', blank=True)
+    crew = models.ManyToManyField('bifffidus.Crew', related_name='movie_crew', blank=True)
     production_company = models.ManyToManyField('bifffidus.Production_Company', related_name='production_company', blank=True)
     country = models.ManyToManyField('bifffidus.Country', related_name='country', blank=True)
     spoken_language = models.ManyToManyField('bifffidus.Spoken_Language', related_name='spoken_language', blank=True)
@@ -105,17 +105,24 @@ class Movie(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     objects = MovieManager()
-            
+    
+    def get_poster_image_url_185(self):
+        url = "/static/img/movie.no-img.185.png"
+        if(self.poster_path and self.poster_path!="None"):
+            url_img="https://image.tmdb.org/t/p/w185"
+            url = url_img + self.poster_path
+        return url
+                
     def get_poster_image_url_45(self):
         url = "/static/img/movie.no-img.45.png"
-        if(self.poster_path):
+        if(self.poster_path and self.poster_path!="None"):
             url_img="https://image.tmdb.org/t/p/w45"
             url = url_img + self.poster_path
         return url
     
     def get_poster_image_url_92(self):
         url = "/static/img/movie.no-img.92.png"
-        if(self.poster_path):
+        if(self.poster_path and self.poster_path!="None"):
             url_img="https://image.tmdb.org/t/p/w92"
             url = url_img + self.poster_path
         return url
@@ -135,19 +142,19 @@ class Job(models.Model):
 class Crew(models.Model):
     job = models.ForeignKey('bifffidus.Job', related_name='job_person', on_delete=models.CASCADE, null=False)
     person = models.ForeignKey('bifffidus.Person', related_name='crew_person', on_delete=models.CASCADE, null=True)
-    movie = models.ForeignKey(Movie, related_name="movie_crew", on_delete=models.CASCADE, null=True)    
+    #movie = models.ForeignKey(Movie, related_name="movie_crew", on_delete=models.CASCADE, null=True)    
     
     def __str__(self):        
-        return "{department} : {job} : {person} : {movie}".format(department=self.job.department,job=self.job.jobname, person=self.person, movie=self.movie.title)
+        return "{department} : {job} : {person}".format(department=self.job.department,job=self.job.jobname, person=self.person)
     
 class Cast(models.Model):
     order = models.IntegerField(default=0)
     character= models.CharField(max_length=100, default="")
     person = models.ForeignKey('bifffidus.Person', related_name='cast_person', on_delete=models.CASCADE, null=True)    
-    movie = models.ForeignKey(Movie, related_name="movie_cast", on_delete=models.CASCADE, null=True)    
+    #movie = models.ForeignKey(Movie, related_name="movie_cast", on_delete=models.CASCADE, null=True)    
     
     def __str__(self):        
-        return "{character} [{order}]: {person} : {movie}".format(character=self.character,order=self.order, person=self.person, movie=self.movie)
+        return "{character} [{order}]: {person}".format(character=self.character,order=self.order, person=self.person)
 
 class Place(models.Model):
     name = models.CharField(max_length=200)
@@ -201,7 +208,9 @@ class Screening(models.Model):
 # (can be for competitions, awards, special events...)    
 class Tag(models.Model):
     name = models.CharField(max_length=200)    
-    
+    #tagtype = models.CharField(max_length=200)
+    # award, competition, other
+    #icon = models.CharField(max_length=200)
     def __str__(self):
         return self.name
     

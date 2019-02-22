@@ -311,8 +311,10 @@ class Command(BaseCommand):
                                 c.character = character
                                 c.order = actor.getAttribute("order")
                                 c.person = p
-                                c.movie = m
-                                c.save()                    
+                                #c.movie = m
+                                c.save()
+                                m.cast.add(c)
+                                m.save()                    
                                 
                                 
                             print('', end='\n')
@@ -361,9 +363,10 @@ class Command(BaseCommand):
                                 
                                 c.job = j
                                 c.person = p
-                                c.movie = m
-                                c.save()                    
-                                                                
+                                #c.movie = m
+                                c.save()
+                                m.crew.add(c)                    
+                                m.save()                                
                                 
                         else:
                             print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    

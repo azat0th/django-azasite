@@ -3,7 +3,7 @@
 {% block content %}
     <div class="post text-light border">       
         <h1 class="blog-title">{{ movie.title }}</h1>
-        <img src="{{url_img}}{{ movie.poster_path }}" class="img-thumbnail  mx-auto d-block"/>
+        <img src="{{ movie.get_poster_image_url_185 }}" class="img-thumbnail  mx-auto d-block"/>
         <p>        
         	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">IMDB link</a> 
         	<a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id }}">TMDB link</a>
@@ -38,16 +38,14 @@
 		</p>
 		<p>Casting:</p>
 		<ul>
-		{% for cast in casting.all %}
-			<li>[{{cast.character}}]:[{{cast.order}}]:<a href="{% url 'person_detail' pk=cast.person.id %}">[{{cast.person.name}}]</a></li>
-			
+		{% for c in movie.cast.all %}
+			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a> as {{c.character}} [{{c.order}}]</li>
 		{% endfor %}
 		</ul>
-		
 		<p>Crew:</p>
 		<ul>
-		{% for cw in crew.all %}
-			<li>[{{cw.department}}]:[{{cw.job}}]:<a href="{% url 'person_detail' pk=cw.person.id %}">[{{cw.person.name}}]</a></li>
+		{% for cw in movie.crew.all %}
+			<li>[{{cw.job.jobname}}]:<a href="{% url 'person_detail' pk=cw.person.id %}">{{cw.person.name}}</a></li>
 		{% endfor %}
 		</ul>
 		

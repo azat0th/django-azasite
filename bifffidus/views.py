@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Tag_Movie_Festival
+from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Tag_Movie_Festival, Job
 import datetime
-from .models import Tag_Movie_Festival
 from django.core.paginator import Paginator
+from .forms import  MovieSearchForm
 
 def get_dates_by_festival(pk):    
     screenings = Screening.objects.filter(festival_id=pk)
@@ -32,34 +32,63 @@ def movie_list(request):
     paginator = Paginator(movie_list, 25) #show 25 movies
     nb_movies = len(movie_list)
     page = request.GET.get('page')
+    form = MovieSearchForm()
     if(page is None):
         page = 1    
     movies = paginator.page(page)
+    director = get_object_or_404(Job,  jobname="Director")
     #movies = movie_list
     url_img="https://image.tmdb.org/t/p/w92"
-    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img,})
+    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'director':director})
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
     url_img="https://image.tmdb.org/t/p/w185"
     screenings = Screening.objects.filter(movie_id=pk)
     tags = Tag_Movie_Festival.objects.filter(movie_id=pk)
-    casting = Cast.objects.filter(movie_id=pk)
-    crew = Crew.objects.filter(movie_id=pk)    
-    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags, 'casting' : casting, 'crew' : crew})
+    #casting = Cast.objects.filter(movie_id=pk)
+    #crew = Crew.objects.filter(movie_id=pk)
+    print(movie)    
+    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
 
 def movie_by_festival(request, pk):
-    sql = '''   SELECT * 
-                FROM bifffidus_movie,bifffidus_screening 
-                WHERE bifffidus_movie.id = bifffidus_screening.movie_id 
-                    AND bifffidus_screening.festival_id = %u
-                GROUP BY bifffidus_movie.id 
-                ORDER BY bifffidus_movie.title   
-                    ''' % (pk)
-    movies = Screening.objects.raw(sql)  
+
+    sql = '''   SELECT        
+                        bifffidus_movie.id,
+                        bifffidus_movie.title,
+                        bifffidus_person.name 
+                FROM bifffidus_person, bifffidus_movie, bifffidus_screening, 
+                    bifffidus_crew, bifffidus_job  
+                WHERE
+                    bifffidus_movie.id = bifffidus_crew.movie_id AND 
+                    bifffidus_crew.person_id=bifffidus_person.id AND 
+                    bifffidus_job.id = bifffidus_crew.job_id AND 
+                    bifffidus_movie.id = bifffidus_screening.movie_id AND 
+                    bifffidus_job.jobname = "Director" AND 
+                    bifffidus_screening.festival_id= %u 
+                ORDER BY bifffidus_movie.title
+                ''' % (pk)    
+    movies = Screening.objects.raw(sql)
+    print(movies)
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
+
+def movie_search(request):
+    message = ""
+    if request.method == 'GET':
+        form = MovieSearchForm(request.GET)
+        if form.is_valid():
+            message = "formulaire valide"
+            movie_title = request.GET['movie_title']
+            movies = Movie.objects.filter(title__icontains=movie_title).order_by('title').all()
+            nb_movies = movies.count()
+            url_img = url_img="https://image.tmdb.org/t/p/w92"
+            return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'message': message})            
+    else:
+        form = MovieSearchForm()
+        message = "not POST"    
+    return render(request, 'bifffidus/movie_list.html',{ 'message': message, 'form': form })
 
 def festival_list(request):
     festivals = Festival.objects.order_by('start_date').all
@@ -89,9 +118,25 @@ def person_list(request):
 
 def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)
-    cast = Cast.objects.filter(person_id=pk)
-    crew = Crew.objects.filter(person_id=pk)
-    return render(request, 'bifffidus/person_detail.html', {'person': person, 'cast' : cast, 'crew' : crew})
+    
+    sql_cast = '''select bifffidus_movie.id,bifffidus_movie.title, bifffidus_cast.character
+            from bifffidus_person, bifffidus_movie, bifffidus_cast, bifffidus_movie_cast 
+            where bifffidus_movie.id = bifffidus_movie_cast.movie_id and
+             bifffidus_movie_cast.cast_id = bifffidus_cast.id and 
+             bifffidus_cast.person_id=bifffidus_person.id and       
+             bifffidus_person.id= %u ;
+    ''' % (pk)
+    movie_cast = Movie.objects.raw(sql_cast)
+    sql_crew = '''select bifffidus_movie.id,title,jobname 
+            from bifffidus_person, bifffidus_movie, bifffidus_crew, bifffidus_job, bifffidus_movie_crew  
+            where bifffidus_movie.id = bifffidus_movie_crew.movie_id and
+             bifffidus_movie_crew.crew_id = bifffidus_crew.id and 
+             bifffidus_crew.person_id=bifffidus_person.id and 
+             bifffidus_job.id = bifffidus_crew.job_id and      
+             bifffidus_person.id= %u ;
+    ''' % (pk)
+    movie_crew = Movie.objects.raw(sql_crew)   
+    return render(request, 'bifffidus/person_detail.html', {'person': person, 'movie_cast' : movie_cast, 'movie_crew' : movie_crew})
 
 def tag_list(request):
     tags = Tag.objects.order_by('name').all
@@ -119,20 +164,3 @@ def genre_detail(request,pk):
     genre = get_object_or_404(Genre, pk=pk)
     movies = Movie.objects.filter(genre__id=pk).order_by('title')
     return render(request, 'bifffidus/genre_detail.html', {'genre':genre, 'movies': movies})
-
-'''
-
-def tag_list(request):
-def country_list(request):
-def genre_list(request):
-def department_list(request):
-def job_list(request):
-def person_list(request):
-
-def movie_by_tag(request,pk):
-def movie_by_country(request, pk):
-def movie_by_genre(request, pk):
-
-rajouter des fields date de création, mise à jour sur movie, festival, person
-
-'''
