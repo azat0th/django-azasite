@@ -12,3 +12,4 @@ scrapmovies.py
 *.backup
 /bifffidus/migration
 *.sh
+*.json

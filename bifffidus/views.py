@@ -139,7 +139,7 @@ def person_detail(request, pk):
     return render(request, 'bifffidus/person_detail.html', {'person': person, 'movie_cast' : movie_cast, 'movie_crew' : movie_crew})
 
 def tag_list(request):
-    tags = Tag.objects.order_by('name').all
+    tags = Tag.objects.order_by('tag_type','name').all
     return render(request, 'bifffidus/tag_list.html', {'tags': tags })
 
 def tag_detail(request, pk):

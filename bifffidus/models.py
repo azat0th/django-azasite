@@ -180,10 +180,17 @@ class Festival(models.Model):
     start_date = models.DateField(default = timezone.now)
     end_date = models.DateField(default= timezone.now)
     place = models.ManyToManyField('bifffidus.Place', related_name="place", blank=True)
-
+    
+    poster_path = models.CharField(max_length=200, default='')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-        
+    
+    def get_poster_image_url(self):
+        url = ""
+        if(self.poster_path):            
+            url = "/static/img/" + self.poster_path
+        return url
+    
     def get_absolute_url(self):            
         return reverse('festival_detail', args=[self.id])  
     
@@ -203,14 +210,19 @@ class Screening(models.Model):
     
     def __str__(self):
         return self.screening_datetime.strftime('%d/%m/%Y %H:%M')+' ('+self.screen.room_name +') : ' + self.movie.title
+
+class Tag_Type(models.Model):
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
     
 #this model represent a screening tag, it allows to categorize the screening 
 # (can be for competitions, awards, special events...)    
 class Tag(models.Model):
-    name = models.CharField(max_length=200)    
-    #tagtype = models.CharField(max_length=200)
-    # award, competition, other
-    #icon = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)  
+    tag_type = models.ForeignKey(Tag_Type, related_name="tag_type", on_delete=models.CASCADE, null=True)
+    
     def __str__(self):
         return self.name
     

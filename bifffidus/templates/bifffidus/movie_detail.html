@@ -39,7 +39,7 @@
 		<p>Casting:</p>
 		<ul>
 		{% for c in movie.cast.all %}
-			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a> as {{c.character}} [{{c.order}}]</li>
+			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a>{%if c.character %} as {{c.character}}{% endif %}</li>
 		{% endfor %}
 		</ul>
 		<p>Crew:</p>

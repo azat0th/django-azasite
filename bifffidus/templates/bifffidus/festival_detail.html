@@ -2,7 +2,9 @@
 {% block content %}
 	<div class="border text-light">		
 		<h2 class='blog-title'>{{ festival.title }}</h2>
-		
+		{% if festival.poster_path %}
+		<img src="{{ festival.get_poster_image_url }}" class="img-thumbnail  mx-auto d-block"/>
+		{% endif %}
 		{% for p in festival.place.all %}
 		<p>Lieu: {{ p.name }}</p>
 			{% for s in p.screen.all %}

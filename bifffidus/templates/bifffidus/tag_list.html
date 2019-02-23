@@ -1,9 +1,16 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
-	<h5>{{tags.count}} tags found</h5>
-    {% for tag in tags %}
-        <div class="border border-danger">
+	 
+    
+    <h5>{{tags.count}} tags found</h5>
+    {% regroup tags by tag_type as tags_by_type %}
+    {% for gtags in tags_by_type %}
+    	<h5>{{ gtags.grouper|title}}</h5>
+    	{% for tag in gtags.list %}
+    		<div class="border border-danger">
 	        <h3 class=''><a  href="{% url 'tag_detail' pk=tag.pk %}">{{ tag.name|title }}</a></h3>
         </div>
+    	{% endfor %}
     {% endfor %}
+    
 {% endblock content %}
