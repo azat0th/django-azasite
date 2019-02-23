@@ -1,13 +1,11 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
 
-	<form action="/bifffidus/movie/search/" method="get">
+	<form action="/bifffidus/movie/" method="get">
    		{% csrf_token %}
    		{{ form }}
    		<input type="submit" value="Submit">
 	</form>
-	
-	<p>{{ message }}</p>
 	
 	<h5>{{nb_movies}} movies found</h5>
     
@@ -15,13 +13,13 @@
 	<nav aria-label="Movie List Navigation">
 	  <ul class="pagination">
 	  	{% if movies.has_previous %}
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1">1</a></li>
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.previous_page_number }}">Previous</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1{% if search %}&{{search}}{% endif%}">1</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.previous_page_number }}{% if search %}&{{search}}{% endif %}">Previous</a></li>
 	    {% endif %}
 	    	<li class="page-item page-link bifff-bg">{{ movies.number }} of {{ movies.paginator.num_pages }}</li>
 	    {% if movies.has_next %}
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.next_page_number }}">Next</a></li>
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.paginator.num_pages }}">last &raquo;</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.next_page_number }}{% if search %}&{{search}}{% endif%}">Next</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.paginator.num_pages }}{% if search %}&{{search}}{% endif %}">last &raquo;</a></li>
 	    {% endif %}
 	  </ul>
 	</nav>

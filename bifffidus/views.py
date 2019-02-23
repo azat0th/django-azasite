@@ -28,18 +28,35 @@ def main_page(request):
     return render(request, 'bifffidus/main_page.html',{'nb_movie':nb_movie, 'nb_person': nb_person, 'nb_festival': nb_festival })
 
 def movie_list(request):
-    movie_list = Movie.objects.order_by('title').all()
+    form = MovieSearchForm()
+    search =''
+    movie_title=''
+    if request.method == 'GET':
+             
+        if form.is_valid():
+            form = MovieSearchForm(request.GET)
+            movie_title = request.GET['movie_title']             
+        else:
+            movie_title = request.GET.get('movie_title')          
+
+    if(movie_title is None):        
+        movie_list = Movie.objects.order_by('title').all()        
+    else:
+        movie_list = Movie.objects.filter(title__icontains=movie_title).order_by('title').all()
+        search="movie_title="+movie_title 
+        
     paginator = Paginator(movie_list, 25) #show 25 movies
     nb_movies = len(movie_list)
+    print("resultat: "+search)
     page = request.GET.get('page')
-    form = MovieSearchForm()
+        
     if(page is None):
         page = 1    
+    
     movies = paginator.page(page)
-    director = get_object_or_404(Job,  jobname="Director")
-    #movies = movie_list
+    director = get_object_or_404(Job,  jobname="Director")    
     url_img="https://image.tmdb.org/t/p/w92"
-    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'director':director})
+    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'director':director, 'search':search})
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
@@ -52,7 +69,6 @@ def movie_detail(request, pk):
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
 
 def movie_by_festival(request, pk):
-
     sql = '''   SELECT        
                         bifffidus_movie.id,
                         bifffidus_movie.title,
@@ -73,22 +89,6 @@ def movie_by_festival(request, pk):
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
-
-def movie_search(request):
-    message = ""
-    if request.method == 'GET':
-        form = MovieSearchForm(request.GET)
-        if form.is_valid():
-            message = "formulaire valide"
-            movie_title = request.GET['movie_title']
-            movies = Movie.objects.filter(title__icontains=movie_title).order_by('title').all()
-            nb_movies = movies.count()
-            url_img = url_img="https://image.tmdb.org/t/p/w92"
-            return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'message': message})            
-    else:
-        form = MovieSearchForm()
-        message = "not POST"    
-    return render(request, 'bifffidus/movie_list.html',{ 'message': message, 'form': form })
 
 def festival_list(request):
     festivals = Festival.objects.order_by('start_date').all
