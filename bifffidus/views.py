@@ -43,7 +43,7 @@ def movie_list(request):
         movie_list = Movie.objects.order_by('title').all()        
     else:
         movie_list = Movie.objects.filter(title__icontains=movie_title).order_by('title').all()
-        search="movie_title="+movie_title 
+        search=movie_title 
         
     paginator = Paginator(movie_list, 25) #show 25 movies
     nb_movies = len(movie_list)
