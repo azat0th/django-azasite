@@ -25,14 +25,22 @@
     	{{screening_list.grouper|title}} ({{ screening_list.list|length }} screenings)
     	</a></p>
     	</h4>
-		<div class="row">
-       	{% for screening in screening_list.list %}
-       		<div class="column border">
-       			<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/></a>
-       			<p><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a></p>
-       			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
-       			<p>{{screening.screen.room_name}}</p>
-       		</div>	       	
+    	
+    	{% for screen in screens %}
+			<div class="row">
+       		{% for screening in screening_list.list %}
+       			
+       			{% if screen.id is screening.screen.id %}       			
+       			<div class="column border">
+	       			<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/></a>
+	       			<p><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a></p>
+    	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
+       				<p>{{screening.screen.room_name|title}}</p>
+       			</div>	
+           		{% endif %}
+           		
+           	{% endfor %}
+           	</div>			       	
        	{% endfor %}
    	</div>
     {% endfor %}

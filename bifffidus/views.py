@@ -87,9 +87,14 @@ def festival_list(request):
 def festival_detail(request, pk):
     festival = get_object_or_404(Festival, pk=pk)    
     #screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
+    
+    screens = []    
     screenings_query = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
     screenings = []
     for s in screenings_query:
+        
+        if(s.screen not in screens):
+            screens.append(s.screen)
         if(s.screening_datetime.hour>=HOUR_MAX_SCREENING):
             s.view_date = s.screening_datetime.date()            
             screenings.append(s)
@@ -97,10 +102,11 @@ def festival_detail(request, pk):
             s.view_date = s.screening_datetime.date() - timedelta(days=1)
             screenings.append(s)
     
-    for s in screenings:
-        print("screening: {sa}:{sb}:{title}".format(sa=s.view_date, sb=s.screen, title=s.movie.title))
+    print(screens)
+    #for s in screenings:
+    #    print("screening: {sa}:{sb}:{title}".format(sa=s.view_date, sb=s.screen, title=s.movie.title))
     url_img="https://image.tmdb.org/t/p/w45"
-    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img,})
+    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img, 'screens': screens})
 
 def movie_by_date(request, year,  month,  day):
     searched_date = datetime.date(year, month, day)
