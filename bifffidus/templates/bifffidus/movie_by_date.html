@@ -2,11 +2,17 @@
 {% block content %}
 
 <p>Nombre de séances du jour: {{ screenings|length }}</p>
-
-{% for screening in screenings %}
-	<div class="border text-light">			
-		<p><a  href=""><h2 class='blog-title'>{{ screening.movie}} : {{ screening.screening_datetime }}</h2></a></p>
-		            
+{% regroup screenings by screen as screenings_by_screen %}
+{% for screenings_of_screen in screenings_by_screen %}
+	<h4>{{screenings_of_screen.grouper|title}}</h4>
+	<div class="row">
+		{% for screening in screenings_of_screen.list %}
+		<div class="column border">
+			<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/></a>
+			<p><a  href="" class="">{{screening.movie.title|title}}</a></p>
+			<p>{{screening.screening_datetime|date:"H:i"}}</p> 		
+		</div>	
+		{%endfor%}
 	</div>
 {% endfor %}
     

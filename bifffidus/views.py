@@ -3,6 +3,11 @@ from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag,
 import datetime
 from django.core.paginator import Paginator
 from .forms import  MovieSearchForm
+from datetime import timedelta  
+
+#This var is used to regroup screenings passed midnight with a date 
+# if passed midnight, then a new datefield is created to screening object with the date of the day before
+HOUR_MAX_SCREENING=7
 
 def get_dates_by_festival(pk):    
     screenings = Screening.objects.filter(festival_id=pk)
@@ -68,23 +73,8 @@ def movie_detail(request, pk):
     print(movie)    
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
 
-def movie_by_festival(request, pk):
-    sql = '''   SELECT        
-                        bifffidus_movie.id,
-                        bifffidus_movie.title,
-                        bifffidus_person.name 
-                FROM bifffidus_person, bifffidus_movie, bifffidus_screening, 
-                    bifffidus_crew, bifffidus_job  
-                WHERE
-                    bifffidus_movie.id = bifffidus_crew.movie_id AND 
-                    bifffidus_crew.person_id=bifffidus_person.id AND 
-                    bifffidus_job.id = bifffidus_crew.job_id AND 
-                    bifffidus_movie.id = bifffidus_screening.movie_id AND 
-                    bifffidus_job.jobname = "Director" AND 
-                    bifffidus_screening.festival_id= %u 
-                ORDER BY bifffidus_movie.title
-                ''' % (pk)    
-    movies = Screening.objects.raw(sql)
+def movie_by_festival(request, pk):        
+    movies = Screening.objects.filter(festival_id=pk)
     print(movies)
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
@@ -96,12 +86,33 @@ def festival_list(request):
 
 def festival_detail(request, pk):
     festival = get_object_or_404(Festival, pk=pk)    
-    screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
+    #screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
+    screenings_query = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
+    screenings = []
+    for s in screenings_query:
+        if(s.screening_datetime.hour>=HOUR_MAX_SCREENING):
+            s.view_date = s.screening_datetime.date()            
+            screenings.append(s)
+        if(s.screening_datetime.hour<HOUR_MAX_SCREENING):
+            s.view_date = s.screening_datetime.date() - timedelta(days=1)
+            screenings.append(s)
+    
+    for s in screenings:
+        print("screening: {sa}:{sb}:{title}".format(sa=s.view_date, sb=s.screen, title=s.movie.title))
     url_img="https://image.tmdb.org/t/p/w45"
     return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img,})
 
-def movie_by_date(request, year,  month,  day):      
-    screenings = Screening.objects.filter(screening_datetime__date=datetime.date(year, month, day))
+def movie_by_date(request, year,  month,  day):
+    searched_date = datetime.date(year, month, day)
+
+    screenings_query = Screening.objects.filter(screening_datetime__year=year)
+    screenings = []
+    for s in screenings_query :        
+        if(s.screening_datetime.date()==searched_date and s.screening_datetime.hour>HOUR_MAX_SCREENING):                        
+            screenings.append(s)
+        if(s.screening_datetime.date()==searched_date + timedelta(days=1) and s.screening_datetime.hour<HOUR_MAX_SCREENING):
+            screenings.append(s)
+    
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
 
 def person_list(request):

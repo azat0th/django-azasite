@@ -105,7 +105,7 @@ class Movie(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     objects = MovieManager()
-    
+        
     def get_poster_image_url_185(self):
         url = "/static/img/movie.no-img.185.png"
         if(self.poster_path and self.poster_path!="None"):
@@ -197,7 +197,16 @@ class Festival(models.Model):
     def __str__(self):
         return self.title
 
-
+class ScreeningQuerySet(models.QuerySet):
+    def by_day(self):        
+        return self
+    
+class ScreeningManager(models.Manager):
+    
+    def by_day(self):
+        screenings_set = self.get_queryset().by_day()
+        return screenings_set 
+        
 #this model represent when the movie has been showed 
 # linked to Movie and Screen
 class Screening(models.Model):
@@ -206,7 +215,10 @@ class Screening(models.Model):
     movie = models.ForeignKey(Movie, related_name="movie_screening", on_delete=models.CASCADE, null=True)
     screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.CASCADE, null=True)
     festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.CASCADE, null=True)
-    is_movie = models.BooleanField(default=True)   
+    is_movie = models.BooleanField(default=True)
+      
+    #objects = models.Manager()
+    #objects_by_day = ScreeningManager()
     
     def __str__(self):
         return self.screening_datetime.strftime('%d/%m/%Y %H:%M')+' ('+self.screen.room_name +') : ' + self.movie.title

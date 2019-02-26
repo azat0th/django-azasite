@@ -6,17 +6,18 @@
 		<img src="{{ festival.get_poster_image_url }}" class="img-thumbnail  mx-auto d-block"/>
 		{% endif %}
 		{% for p in festival.place.all %}
-		<p>Lieu: {{ p.name }}</p>
+		<p>{{ p.name }}</p>
+		<p>Room(s):		
 			{% for s in p.screen.all %}
-				<p>salle: {{s.room_name}}</p>
+				[ {{s.room_name|title}} ]
 			{% endfor %}
+		</p>
 		{% endfor %}	            
 	</div>
 	
 	<a href="{% url 'movie_by_festival' pk=festival.pk %}">Festival Movie List</a>
-    {% regroup screenings by screening_datetime|date:"l d/m/Y" as screenings_by_day %}
-    
-  
+	
+    {% regroup screenings by view_date as screenings_by_day %}
     {% for screening_list in screenings_by_day %}
     <div class=" text-light ">
     	<h4>
@@ -35,6 +36,7 @@
        	{% endfor %}
    	</div>
     {% endfor %}
-    
+
+
     
 {% endblock content %}
