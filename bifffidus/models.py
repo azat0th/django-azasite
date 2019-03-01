@@ -57,7 +57,7 @@ class Spoken_Language(models.Model):
     def __str__(self):
         return self.name
 
-class MovieManager(models.Manager):
+'''class MovieManager(models.Manager):
     
     def create_movie(self,title,imdb_id,tmdb_id,overview,
                      runtime,tagline,backdrop_path,
@@ -77,7 +77,7 @@ class MovieManager(models.Manager):
         if(release_date != 0):
             movie.release_date = release_date
         
-        return movie
+        return movie'''
 
 #this model represent a movie/show
 class Movie(models.Model):
@@ -104,7 +104,7 @@ class Movie(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
-    objects = MovieManager()
+    '''objects = MovieManager()'''
         
     def get_poster_image_url_185(self):
         url = "/static/img/movie.no-img.185.png"
@@ -205,24 +205,8 @@ class ScreeningManager(models.Manager):
     
     def by_day(self):
         screenings_set = self.get_queryset().by_day()
-        return screenings_set 
-        
-#this model represent when the movie has been showed 
-# linked to Movie and Screen
-class Screening(models.Model):
-    #date, heure début, screen, movie
-    screening_datetime =models.DateTimeField(default=timezone.now)
-    movie = models.ForeignKey(Movie, related_name="movie_screening", on_delete=models.CASCADE, null=True)
-    screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.CASCADE, null=True)
-    festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.CASCADE, null=True)
-    is_movie = models.BooleanField(default=True)
-      
-    #objects = models.Manager()
-    #objects_by_day = ScreeningManager()
-    
-    def __str__(self):
-        return self.screening_datetime.strftime('%d/%m/%Y %H:%M')+' ('+self.screen.room_name +') : ' + self.movie.title
-
+        return screenings_set
+     
 class Tag_Type(models.Model):
     name = models.CharField(max_length=100)
     
@@ -234,17 +218,23 @@ class Tag_Type(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=200)  
     tag_type = models.ForeignKey(Tag_Type, related_name="tag_type", on_delete=models.CASCADE, null=True)
+    icon_path = models.CharField(max_length=200, default='', blank=True)
     
     def __str__(self):
-        return self.name
+        return self.name        
+#this model represent when the movie has been showed 
+# linked to Movie and Screen
+class Screening(models.Model):
+    #date, heure début, screen, movie
+    screening_datetime =models.DateTimeField(default=timezone.now)
+    movie = models.ForeignKey(Movie, related_name="movie_screening", on_delete=models.CASCADE, null=True)
+    screen = models.ForeignKey(Screen, related_name="screen", on_delete=models.CASCADE, null=True)
+    festival = models.ForeignKey(Festival, related_name="festival", on_delete=models.CASCADE, null=True)        
+    tag = models.ManyToManyField(Tag, related_name="screening_tag", blank=True)
+    #objects = models.Manager()
+    #objects_by_day = ScreeningManager()
     
-class Tag_Movie_Festival(models.Model):
-    
-    festival = models.ForeignKey(Festival, related_name="festival_tag", on_delete=models.CASCADE, null=True)
-    movie = models.ForeignKey(Movie, related_name="movie_tag", on_delete=models.CASCADE, null=True)
-    tag = models.ForeignKey(Tag, related_name="tag", on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.screening_datetime.strftime('%d/%m/%Y %H:%M')+' ('+self.screen.room_name +') : ' + self.movie.title
 
-    def __str__(self):
-        return self.movie.title+" : "+self.tag.name+" ["+str(self.festival.start_date.year)+"]"
-    
-        
+

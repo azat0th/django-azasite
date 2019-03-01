@@ -36,8 +36,7 @@ note:
 from xml.dom import minidom
 from django.core.management.base import BaseCommand, CommandError
 import datetime
-from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag,\
-    Tag_Movie_Festival, Job
+from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag, Job
 from bifffidus.models import Genre, Spoken_Language, Production_Company 
 from bifffidus.models import Person, Country, Cast, Crew
 from django.utils import timezone
@@ -371,43 +370,22 @@ class Command(BaseCommand):
                         else:
                             print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    
                             m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "",0)
-                        print('\n')   
-                    tags = movie.getElementsByTagName("tag")
-                    print("[Tags] found: {nb}".format(nb=len(tags)))
-       
-                    for tag_Node in tags:
-                        if(len(tag_Node.firstChild.data)>0):
-                            tagname = tag_Node.firstChild.data
-                            t = Tag()
+                        print('\n')
 
-                            
-                            tag_in_db = Tag.objects.filter(name__exact=tagname)
-                            if(len(tag_in_db)==1): #déjà en db
-                                print(bcolors.OKGREEN+"[Tag] already in DB : {tag}".format(tag=tagname)+bcolors.ENDC)
-                                t_in_db = Tag.objects.get(name=tagname)
-                                t = t_in_db
-                            elif(len(tag_in_db)==0): #pas encore en db    
-                                print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)                                                                    
-                                t.name = tagname
-                                t.save()
-                            else:
-                                print(bcolors.FAIL+"[Tag] Erreur lors de la correspondance des tags avec la DB:")
-                                print("[Tag] Nombre de tags trouvés en db= {nb}".format(nb=len(tag_in_db))+bcolors.ENDC)                                    
-                            tmt = Tag_Movie_Festival()       
-                            tmt.festival = festival
-                            tmt.tag = t
-                            tmt.movie = m
-                            tmt.save()
                     screenings = movie.getElementsByTagName("screening")
                     print("[Screenings] found: {nb}".format(nb=len(screenings)))
                     for screening_Node in screenings:
                         if(screening_Node.childNodes[0].data):
+                            s = Screening()
+                            s.movie = m
+                            s.save()
                             screening_datetime = datetime.datetime.strptime(screening_Node.childNodes[0].data, '%d/%m/%Y %H:%M')
-                            s = Screening() 
+                             
+                            tags = movie.getElementsByTagName("tag")
+                            print("[Tags] found: {nb}".format(nb=len(tags)))
+               
                             screen = screening_Node.getAttribute('screen')
-                            
                             #screen_in_db = Screen.objects.get(room=screen)
-                            
                             screen_in_db = Screen.objects.filter(room_name__exact=screen)
                             if(len(screen_in_db)==1):
                                 #screen déjà en db
@@ -424,8 +402,29 @@ class Command(BaseCommand):
                             else:                                    
                                 print(bcolors.FAIL+"[Screening:Screen] Erreur lors de la correspondance des Screenings avec la DB:")
                                 print("[Screening] Screening trouvés en db= {nb}".format(nb=len(screen_in_db))+bcolors.ENDC)
+
+                            for tag_Node in tags:
+                                if(len(tag_Node.firstChild.data)>0):
+                                    tagname = tag_Node.firstChild.data
+                                    t = Tag()                                    
+                                    tag_in_db = Tag.objects.filter(name__exact=tagname)
+                                    if(len(tag_in_db)==1): #déjà en db
+                                        print(bcolors.OKGREEN+"[Tag] already in DB : {tag}".format(tag=tagname)+bcolors.ENDC)
+                                        t_in_db = Tag.objects.get(name=tagname)
+                                        t = t_in_db
+                                        s.tag.add(t)
+                                    elif(len(tag_in_db)==0): #pas encore en db    
+                                        print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)                                                                    
+                                        t.name = tagname
+                                        t.save()
+                                        s.tag.add(t)
+                                    else:
+                                        print(bcolors.FAIL+"[Tag] Erreur lors de la correspondance des tags avec la DB:")
+                                        print("[Tag] Nombre de tags trouvés en db= {nb}".format(nb=len(tag_in_db))+bcolors.ENDC)
+                                    
+                                    s.save()
                                 
-                            s.movie = m
+                            
                             s.festival = festival
                             s.screening_datetime = screening_datetime 
                             s.save()                                                  

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Tag_Movie_Festival, Job
+from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Job
 import datetime
 from django.core.paginator import Paginator
 from .forms import  MovieSearchForm
@@ -52,7 +52,7 @@ def movie_list(request):
         
     paginator = Paginator(movie_list, 25) #show 25 movies
     nb_movies = len(movie_list)
-    print("resultat: "+search)
+
     page = request.GET.get('page')
         
     if(page is None):
@@ -67,15 +67,13 @@ def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
     url_img="https://image.tmdb.org/t/p/w185"
     screenings = Screening.objects.filter(movie_id=pk)
-    tags = Tag_Movie_Festival.objects.filter(movie_id=pk)
-    #casting = Cast.objects.filter(movie_id=pk)
-    #crew = Crew.objects.filter(movie_id=pk)
-    print(movie)    
+    tags = []
+        
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
 
 def movie_by_festival(request, pk):        
     movies = Screening.objects.filter(festival_id=pk)
-    print(movies)
+    
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
@@ -87,12 +85,10 @@ def festival_list(request):
 def festival_detail(request, pk):
     festival = get_object_or_404(Festival, pk=pk)    
     #screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
-    
-    screens = []    
+    screens = []
     screenings_query = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
     screenings = []
-    for s in screenings_query:
-        
+    for s in screenings_query:        
         if(s.screen not in screens):
             screens.append(s.screen)
         if(s.screening_datetime.hour>=HOUR_MAX_SCREENING):
@@ -101,10 +97,7 @@ def festival_detail(request, pk):
         if(s.screening_datetime.hour<HOUR_MAX_SCREENING):
             s.view_date = s.screening_datetime.date() - timedelta(days=1)
             screenings.append(s)
-    
-    print(screens)
-    #for s in screenings:
-    #    print("screening: {sa}:{sb}:{title}".format(sa=s.view_date, sb=s.screen, title=s.movie.title))
+
     url_img="https://image.tmdb.org/t/p/w45"
     return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img, 'screens': screens})
 
@@ -160,9 +153,16 @@ def tag_list(request):
     return render(request, 'bifffidus/tag_list.html', {'tags': tags })
 
 def tag_detail(request, pk):
-    tag = get_object_or_404(Tag, pk=pk)
-    tfms = Tag_Movie_Festival.objects.filter(tag__id=pk)
-    return render(request, 'bifffidus/tag_detail.html', {'tag':tag, 'tfms':tfms})
+    tag = get_object_or_404(Tag, pk=pk)    
+    screenings_result = Screening.objects.filter(tag__id=pk)
+    movies = []
+    for s in screenings_result:
+        if(s.movie not in movies):
+            m = s.movie
+            m.festival = s.festival.title
+            movies.append(s.movie)
+        
+    return render(request, 'bifffidus/tag_detail.html', {'tag':tag, 'movies':movies})
 
 def country_list(request):
     countries = Country.objects.order_by('name').all
