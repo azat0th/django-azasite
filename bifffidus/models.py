@@ -220,6 +220,12 @@ class Tag(models.Model):
     tag_type = models.ForeignKey(Tag_Type, related_name="tag_type", on_delete=models.CASCADE, null=True)
     icon_path = models.CharField(max_length=200, default='', blank=True)
     
+    def check_type(self):
+        if(self.tag_type.id != 3):
+            return True
+        else:
+            return False
+        
     def __str__(self):
         return self.name        
 #this model represent when the movie has been showed 

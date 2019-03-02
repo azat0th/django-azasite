@@ -9,7 +9,7 @@
 .container {
   position: relative;
   text-align: center;
-  color: red;
+  /*color: red;*/
   font-family: 'Changa';
 }
 
@@ -65,7 +65,10 @@ img {
     max-width: 100%;
     height: auto;
 }
-
+.bifff-badge {
+	color=Yellow;
+	background-color: grey;
+}
 /* <--for festival_detail.html */
 * {
   box-sizing: border-box;
