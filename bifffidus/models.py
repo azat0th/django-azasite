@@ -181,7 +181,7 @@ class Festival(models.Model):
     end_date = models.DateField(default= timezone.now)
     place = models.ManyToManyField('bifffidus.Place', related_name="place", blank=True)
     
-    poster_path = models.CharField(max_length=200, default='')
+    poster_path = models.CharField(max_length=200, default='', blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
@@ -220,8 +220,12 @@ class Tag(models.Model):
     tag_type = models.ForeignKey(Tag_Type, related_name="tag_type", on_delete=models.CASCADE, null=True)
     icon_path = models.CharField(max_length=200, default='', blank=True)
     
+    #hidden default false is for easy developmenent measure, 
+    #must be True but import don't take this option right now
+    hidden = models.BooleanField(default=False)
+    
     def check_type(self):
-        if(self.tag_type.id != 3):
+        if(self.tag_type.name != 'others'):
             return True
         else:
             return False

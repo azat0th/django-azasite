@@ -21,7 +21,11 @@ h1, h2, h3, h4, h5 {
     font-family: 'Changa', cursive;
     color: white;
 }
-
+.bifff-red { color: red;
+}
+form {
+	color: white;
+}
 .bifff-menu {
 	color: Red;
 	font-family: 'Shojumaru';

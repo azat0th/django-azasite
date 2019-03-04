@@ -1,4 +1,5 @@
 {% extends 'bifffidus/base.html' %}
+{% load static %}
 {% block content %}
 	 
     
@@ -8,7 +9,12 @@
     	<h5>{{ gtags.grouper|title}}</h5>
     	{% for tag in gtags.list %}
     		<div class="border border-danger">
-	        <h3 class=''><a  href="{% url 'tag_detail' pk=tag.pk %}">{{ tag.name|title }}</a></h3>
+	        <h3 class=''>
+	        	<a  href="{% url 'tag_detail' pk=tag.pk %}">{{ tag.name|title }}</a>
+	        	{% if tag.icon_path %}
+	        	<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}">
+	        	{% endif %}
+	        </h3>
         </div>
     	{% endfor %}
     {% endfor %}
