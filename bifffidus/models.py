@@ -57,7 +57,7 @@ class Spoken_Language(models.Model):
     def __str__(self):
         return self.name
 
-'''class MovieManager(models.Manager):
+class MovieManager(models.Manager):
     
     def create_movie(self,title,imdb_id,tmdb_id,overview,
                      runtime,tagline,backdrop_path,
@@ -75,9 +75,8 @@ class Spoken_Language(models.Model):
         movie.original_language = original_language
         movie.original_title = original_title
         if(release_date != 0):
-            movie.release_date = release_date
-        
-        return movie'''
+            movie.release_date = release_date        
+        return movie
 
 #this model represent a movie/show
 class Movie(models.Model):
@@ -104,8 +103,16 @@ class Movie(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
-    '''objects = MovieManager()'''
-        
+    objects = MovieManager()    
+    
+    def get_director(self):
+        director = ""
+        for c in self.crew.all() :
+            if(c.job.jobname == "Director"):
+                director = director + "[" + c.person.name + "]"           
+        return director
+    
+    
     def get_poster_image_url_185(self):
         url = "/static/img/movie.no-img.185.png"
         if(self.poster_path and self.poster_path!="None"):
@@ -185,6 +192,7 @@ class Festival(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
+        
     def get_poster_image_url(self):
         url = ""
         if(self.poster_path):            
@@ -195,7 +203,8 @@ class Festival(models.Model):
         return reverse('festival_detail', args=[self.id])  
     
     def __str__(self):
-        return self.title
+        
+        return "{title} [{year}]".format(title=self.title, year=self.start_date)
 
 class ScreeningQuerySet(models.QuerySet):
     def by_day(self):        
@@ -225,7 +234,7 @@ class Tag(models.Model):
     hidden = models.BooleanField(default=False)
     
     def check_type(self):
-        if(self.tag_type.name != 'others'):
+        if(self.tag_type.name != 'others' or self.name == "night"):
             return True
         else:
             return False

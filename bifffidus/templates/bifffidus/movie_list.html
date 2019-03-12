@@ -33,13 +33,7 @@
         	<div class="col-md-8">
 		        <h4><a  href="{% url 'movie_detail' pk=movie.pk %}">{{ movie.title|title }} ({{movie.release_date|date:"Y"}})</a></h4>
         	    <p> {{ movie.tagline }}</p>
-        	    <p>
-        	    {% for c in movie.crew.all %}
-        	    	{% if c.job.id is director.id %}
-        	    		[{{ c.person.name }}]
-        	    	{% endif %}
-        	    {% endfor %}
-        	    </p>
+        	    <p>{{ movie.get_director}} </p>
         	   	<p>
         	    {% for genre in movie.genre.all %}
         	    	[{{genre.name}}]

@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="post text-light border">       
-        <h1 class="blog-title">{{ movie.title }}</h1>
+        <h1 class="blog-title">{{ movie.title|title }}</h1>
         <img src="{{ movie.get_poster_image_url_185 }}" class="img-thumbnail  mx-auto d-block"/>
         <p>        
         	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">IMDB link</a> 
@@ -11,41 +11,53 @@
 		<p>Overview: {{ movie.overview }}</p>
 		<p>Release Date: {{ movie.release_date }}</p>
 		<p>Runtime: {{ movie.runtime }}</p>
-		<p>Tagline: {{ movie.tagline }}</p>
+		{% if movie.tagline %}
+			<p>Tagline: {{ movie.tagline }}</p>
+		{% endif %}
 		<!--p>Backdrop Path: {{ movie.backdrop_path }}</p-->
 		<!--p>Poster Path: {{ movie.poster_path }}</p-->
 		<p>Original Language: {{ movie.original_language }}</p>
-		<p>Original title: {{ movie.original_title }}</p>
+		{% if movie.original_title is not movie.title %}
+			<p>Original title: {{ movie.original_title }}</p>
+		{% endif %}
 		<p>Genres:
 		{% for g in movie.genre.all %}
 			<a href="{% url 'genre_detail' pk=g.id %}">[{{ g.name }}]</a>
 		{% endfor %}
 		</p>
-		<p>Production Companies: 
-		{% for p in movie.production_company.all %}
-			[{{ p.name }}]
-		{% endfor %}
-		</p>
-		<p>Countries: 
-		{% for c in movie.country.all %}
-			<a href="{% url 'country_detail' pk=c.id %}">[{{ c.name }}]</a>
-		{% endfor %}
-		</p>
-		<p>Spoken Languages :
-		{% for s in movie.spoken_language.all %}
-			[{{ s.name }}]
-		{% endfor %}
-		</p>
-		<p>Casting:</p>
-		<ul>
-		{% for c in movie.cast.all %}
-			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a>{%if c.character %} as {{c.character}}{% endif %}</li>
-		{% endfor %}
-		</ul>
+		{% if movie.production_company.all %}
+			<p>Production Companies: 
+			{% for p in movie.production_company.all %}
+				[{{ p.name }}]
+			{% endfor %}
+			</p>
+		{% endif %}
+		{%if movie.country.all %}
+			<p>Countries: 
+			{% for c in movie.country.all %}
+				<a href="{% url 'country_detail' pk=c.id %}">[{{ c.name }}]</a>
+			{% endfor %}
+			</p>
+		{% endif %}
+		{%if movie.spoken_language.all %}
+			<p>Spoken Languages :
+			{% for s in movie.spoken_language.all %}
+				[{{ s.name }}]
+			{% endfor %}
+			</p>
+		{% endif %}	
+
 		<p>Crew:</p>
 		<ul>
 		{% for cw in movie.crew.all %}
 			<li>[{{cw.job.jobname}}]:<a href="{% url 'person_detail' pk=cw.person.id %}">{{cw.person.name}}</a></li>
+		{% endfor %}
+		</ul>
+
+		<p>Casting:</p>
+		<ul>
+		{% for c in movie.cast.all %}
+			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a>{%if c.character %} as {{c.character}}{% endif %}</li>
 		{% endfor %}
 		</ul>
 		

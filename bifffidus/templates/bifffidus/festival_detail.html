@@ -6,6 +6,7 @@
 		{% if festival.poster_path %}
 		<img src="{{ festival.get_poster_image_url }}" class="img-thumbnail  mx-auto d-block"/>
 		{% endif %}
+		<p>From {{festival.start_date}} to {{festival.end_date}}</p>
 		{% for p in festival.place.all %}
 		<p>{{ p.name }}</p>
 		<p>Room(s):		
@@ -34,8 +35,13 @@
        			
        			{% if screen.id is screening.screen.id %}       			
        			<div class="column border">
-	       			<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/></a>
-	       			<p><a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a></p>
+	       			<a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">
+	       				<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/>
+	       			</a>
+	       			<h5>
+	       				<a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a>
+	       			</h5>
+      				<p>{{screening.movie.get_director}}</p>
     	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
        				<p>{{screening.screen.room_name|title}}</p>       				
        				{% for tag in screening.tag.all %}

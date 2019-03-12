@@ -38,7 +38,7 @@ from django.core.management.base import BaseCommand, CommandError
 import datetime
 from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag, Job
 from bifffidus.models import Genre, Spoken_Language, Production_Company 
-from bifffidus.models import Person, Country, Cast, Crew
+from bifffidus.models import Person, Country, Cast, Crew, Tag_Type
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
@@ -60,6 +60,50 @@ class Command(BaseCommand):
         parser.add_argument('import_file', nargs='+')
 
     def handle(self, *args, **options):
+        #initiate DB with default vals :
+        type_list=["competitions","awards","others"]
+        for type in type_list:
+            tag_in_db = Tag_Type.objects.filter(name__exact=type)
+            if(tag_in_db):
+                print("tag_type déjà en db")
+            else:
+                print("tag_type à ajouter")
+                tag_type = Tag_Type()
+                tag_type.name = type
+                tag_type.save()
+        tag_list = ["grand prix","silver","melies","audience","thriller award", "critics award","7th orbit award"]
+        
+        for tagname in tag_list:
+            tag_in_db = Tag.objects.filter(name=tagname)
+            if(len(tag_in_db)==0):
+                tag_type = get_object_or_404(Tag_Type, name="awards")
+                tag = Tag()
+                tag.name = tagname
+                tag.tag_type = tag_type
+                tag.save()
+            
+        tag_list = ["european competition","international competition","thriller competition","7th orbit"]
+        for tagname in tag_list:
+            tag_in_db = Tag.objects.filter(name=tagname)
+            if(len(tag_in_db)==0):
+                tag_type = get_object_or_404(Tag_Type, name="competitions")
+                tag = Tag()
+                tag.name = tagname
+                tag.tag_type = tag_type
+                tag.save()
+        
+        tag_list = ["7th orbit special mention","thriller special mention"]
+        for tagname in tag_list:
+            tag_in_db = Tag.objects.filter(name=tagname)
+            if(len(tag_in_db)==0):
+                tag_type = get_object_or_404(Tag_Type, name="awards")
+                tag = Tag()
+                tag.name = tagname
+                tag.tag_type = tag_type
+                tag.hidden = True
+                tag.save()            
+            
+                    
         for file in options['import_file']:
             DOMTree = minidom.parse(file)
             collection = DOMTree.documentElement
@@ -73,11 +117,14 @@ class Command(BaseCommand):
                     festival.start_date = datetime.datetime.strptime(collection.getAttribute("start_date"), format_str)
                                    
                 if collection.hasAttribute("end_date"):
-                    print("Root element : end_date = %s" % collection.getAttribute("end_date"))
-                    festival.end_date = collection.getAttribute("end_date")
+                    print("Root element : end_date = %s" % collection.getAttribute("end_date"))                    
                     format_str = '%d/%m/%Y' # The date format
                     festival.end_date = datetime.datetime.strptime(collection.getAttribute("end_date"), format_str)
-                                        
+                
+                if collection.hasAttribute("poster_path"):
+                    print("Root element : poster_path = %s" % collection.getAttribute("poster_path"))
+                    festival.poster_path = collection.getAttribute("poster_path")                
+                
             if(len(festival.title)>0):
                 festival.save()
                 print()
@@ -139,8 +186,8 @@ class Command(BaseCommand):
                         print(bcolors.FAIL+'A Movie with the same imdb_id is already in DB'+bcolors.ENDC)
                         m = get_object_or_404(Movie,imdb_id=imdb_id)
                     else:                        
-                        #m.title = ""+title
-                        #m.imdb_id = ""+imdb_id                        
+                        m.title = ""+title
+                        m.imdb_id = ""+imdb_id                        
                         if(movie.getElementsByTagName("tmdb")):
                             
                             tmdb = movie.getElementsByTagName("tmdb")[0]
@@ -380,9 +427,8 @@ class Command(BaseCommand):
                             s.movie = m
                             s.save()
                             screening_datetime = datetime.datetime.strptime(screening_Node.childNodes[0].data, '%d/%m/%Y %H:%M')
-                             
-                            tags = movie.getElementsByTagName("tag")
-                            print("[Tags] found: {nb}".format(nb=len(tags)))
+                            
+                            
                
                             screen = screening_Node.getAttribute('screen')
                             #screen_in_db = Screen.objects.get(room=screen)
@@ -402,7 +448,10 @@ class Command(BaseCommand):
                             else:                                    
                                 print(bcolors.FAIL+"[Screening:Screen] Erreur lors de la correspondance des Screenings avec la DB:")
                                 print("[Screening] Screening trouvés en db= {nb}".format(nb=len(screen_in_db))+bcolors.ENDC)
-
+                            
+                            tags = movie.getElementsByTagName("tag")
+                            print("[Tags] found: {nb}".format(nb=len(tags)))
+                            
                             for tag_Node in tags:
                                 if(len(tag_Node.firstChild.data)>0):
                                     tagname = tag_Node.firstChild.data
@@ -414,8 +463,10 @@ class Command(BaseCommand):
                                         t = t_in_db
                                         s.tag.add(t)
                                     elif(len(tag_in_db)==0): #pas encore en db    
-                                        print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)                                                                    
+                                        print(bcolors.WARNING+"[Tag] to add : {tag}".format(tag=tagname)+bcolors.ENDC)
+                                        tag_type=get_object_or_404(Tag_Type, name="others")                                                                    
                                         t.name = tagname
+                                        t.tag_type = tag_type
                                         t.save()
                                         s.tag.add(t)
                                     else:
