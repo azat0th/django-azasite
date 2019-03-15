@@ -1,38 +1,52 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
+
+	<form action="/bifffidus/person/" method="get">
+   		{% csrf_token %}
+   		{{ form }}
+   		<input type="submit" value="Submit">
+	</form>
+	<h5>{% if search %}search person: "{{ search }}"{% endif %}</h5>	
     <h5>{{nb_persons}} persons found</h5>
 
 
 	<nav aria-label="Person List Navigation">
 	  <ul class="pagination">
 	  	{% if persons.has_previous %}
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1">1</a></li>
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.previous_page_number }}">Previous</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1{% if search %}&person_name={{search}}{% endif%}">1</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.previous_page_number }}{% if search %}&person_name={{search}}{% endif%}">Previous</a></li>
 	    {% endif %}
 	    	<li class="page-item page-link bifff-bg">{{ persons.number }} of {{ persons.paginator.num_pages }}</li>
 	    {% if persons.has_next %}
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.next_page_number }}">Next</a></li>
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.paginator.num_pages }}">last &raquo;</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.next_page_number }}{% if search %}&person_name={{search}}{% endif%}">Next</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.paginator.num_pages }}{% if search %}&person_name={{search}}{% endif%}">last &raquo;</a></li>
 	    {% endif %}
 	  </ul>
 	</nav>
 
     {% for person in persons %}
-        <div class="border border-danger">
-	        <h3><a  href="{% url 'person_detail' pk=person.pk %}">{{ person.name }}</a></h3>
+        <div class="border border-danger row">
+       		<div class="col-md-8">
+        		<h5><a  href="{% url 'person_detail' pk=person.pk %}">{{ person.name }}</a></h5>
+        	</div>
+       		<div class="col-md-4">
+        	{% if person.profile_path %}        		
+       			<img src="{{ person.get_profile_image_url_45 }}" alt="" class=""/>        		
+        	{% endif %}
+       		</div>
         </div>
     {% endfor %}
 	
 	<nav aria-label="Person List Navigation">
 	  <ul class="pagination">
 	  	{% if persons.has_previous %}
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1">1</a></li>
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.previous_page_number }}">Previous</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1{% if search %}&person_name={{search}}{% endif%}">1</a></li>
+	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.previous_page_number }}{% if search %}&person_name={{search}}{% endif%}">Previous</a></li>
 	    {% endif %}
 	    	<li class="page-item page-link bifff-bg">{{ persons.number }} of {{ persons.paginator.num_pages }}</li>
 	    {% if persons.has_next %}
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.next_page_number }}">Next</a></li>
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.paginator.num_pages }}">last &raquo;</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.next_page_number }}{% if search %}&person_name={{search}}{% endif%}">Next</a></li>
+		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ persons.paginator.num_pages }}{% if search %}&person_name={{search}}{% endif%}">last &raquo;</a></li>
 	    {% endif %}
 	  </ul>
 	</nav>

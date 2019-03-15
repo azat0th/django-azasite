@@ -13,6 +13,7 @@ urlpatterns = [
     path('bifffidus/movie/', views.movie_list, name='movie_list'),    
     
     path('bifffidus/person/', views.person_list, name='person_list'),
+    path('bifffidus/person/dep/<int:pk>', views.person_by_department, name='person_by_department'),
     path('bifffidus/person/<int:pk>', views.person_detail, name='person_detail'),
     
     path('bifffidus/genre/', views.genre_list, name='genre_list'),

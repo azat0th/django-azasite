@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Job
+from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Job, Department
 import datetime
 from django.core.paginator import Paginator
-from .forms import  MovieSearchForm
+from .forms import  MovieSearchForm, PersonSearchForm
 from datetime import timedelta  
 
 #This var is used to regroup screenings passed midnight with a date 
@@ -68,8 +68,12 @@ def movie_detail(request, pk):
     url_img="https://image.tmdb.org/t/p/w185"
     screenings = Screening.objects.filter(movie_id=pk)
     tags = []
-        
-    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags' : tags})
+    for s in screenings:
+        for tag in s.tag.all():
+            print(tag)
+            if(tag not in tags):
+                tags.append(tag)
+    return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags':tags})
 
 def movie_by_festival(request, pk):        
     movies = Screening.objects.filter(festival_id=pk)
@@ -116,16 +120,37 @@ def movie_by_date(request, year,  month,  day):
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
 
 def person_list(request):
-    person_list = Person.objects.order_by('name').all()
+    form = PersonSearchForm()
+    search = ''
+    person_name = ''
+    if request.method == 'GET':
+        if form.is_valid():
+            form = PersonSearchForm(request.GET)
+            person_name = request.GET['person_name']
+        else:
+            person_name = request.GET.get('person_name')
+    
+    if person_name is None :
+        person_list = Person.objects.order_by('name').all()
+    else:
+        person_list = Person.objects.filter(name__icontains=person_name).order_by('name').all()
+        search = person_name 
     
     paginator = Paginator(person_list, 25) #show 25 movies
     nb_persons = len(person_list)
+    
     page = request.GET.get('page')
+    
     if(page is None):
         page = 1    
+    
     persons = paginator.page(page)
     
-    return render(request, 'bifffidus/person_list.html', {'persons': persons, 'nb_persons': nb_persons})
+    return render(request, 'bifffidus/person_list.html', {'persons': persons, 'nb_persons': nb_persons, 'form':form, 'search':search})
+
+def person_by_department(request, pk):
+    departments = Department.objects.filter(department_id=pk)
+    return render(request, 'bifffidus/person_by_department.html', {})
 
 def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)

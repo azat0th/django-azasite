@@ -3,31 +3,40 @@
 {% block content %}
     <div class="post text-light border">       
         <h1 class="blog-title">{{ person.name }}</h1>
-        <p>Gender: {{ person.getGender }}</p>
-        <p>Profile_path: {{ person.profile_path }}</p>
+        {% if person.profile_path %}        		
+   			<img src="{{ person.get_profile_image_url_185 }}" alt="" class=""/>        		
+       	{% endif %}        
+        
         <p>tmdb_id: {{ person.tmdb_id }}</p>
         
    	{% regroup movie_cast by title as cast_by_movie %}
+   	{% if cast_by_movie|length > 0 %}
    	<h4>Actor:</h4>
    	{% for c in cast_by_movie %}   		
    		{% for j in c.list%}
    			{% if forloop.first %}
-   			<h5><a href="{% url 'movie_detail' pk=j.id %}">{{c.grouper|title}}</a></h5>   			
+			<h5><a href="{% url 'movie_detail' pk=j.id %}">{{c.grouper|title}}</a>{{c.poster_path}}</h5>
+			<ul>
    			{% endif %}
-   			[{{j.character}}]
-   		{% endfor %}   		
+   			<li>[{{j.character}}]</li>
+   		{% endfor %}
+   			</ul>
    	{% endfor %}
+   	{% endif %}
    	
    	{% regroup movie_crew by title as crew_by_movie %}
+   	{% if crew_by_movie|length > 0 %}
    	<h4>Crew:</h4>
    	{% for c in crew_by_movie %}   		
    		{% for j in c.list%}
    			{% if forloop.first %}
-   			<h5><a href="{% url 'movie_detail' pk=j.id %}">{{c.grouper|title}}</a></h5>   			
+   			<h5><a href="{% url 'movie_detail' pk=j.id %}">{{c.grouper|title}}</a></h5>
+   			<ul>   			
    			{% endif %}
-   			[{{j.jobname}}]
-   		{% endfor %}   		
+   			<li>[{{j.jobname}}]</li>
+   		{% endfor %}
+   		</ul>   		
    	{% endfor %}
-
+	{% endif %}
     </div>
 {% endblock %}

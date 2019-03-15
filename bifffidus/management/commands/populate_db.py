@@ -38,7 +38,7 @@ from django.core.management.base import BaseCommand, CommandError
 import datetime
 from bifffidus.models import Festival, Movie, Screen, Screening, Place , Tag, Job
 from bifffidus.models import Genre, Spoken_Language, Production_Company 
-from bifffidus.models import Person, Country, Cast, Crew, Tag_Type
+from bifffidus.models import Person, Country, Cast, Crew, Tag_Type, Department
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
@@ -62,20 +62,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         #initiate DB with default vals :
         type_list=["competitions","awards","others"]
-        for type in type_list:
-            tag_in_db = Tag_Type.objects.filter(name__exact=type)
-            if(tag_in_db):
-                print("tag_type déjà en db")
+        for typetag in type_list:
+            tag_in_db = Tag_Type.objects.filter(name__exact=typetag)
+            if tag_in_db:
+                print("tag_type déjà en db:{tag}".format(tag=typetag))
             else:
                 print("tag_type à ajouter")
                 tag_type = Tag_Type()
-                tag_type.name = type
+                tag_type.name = typetag
                 tag_type.save()
         tag_list = ["grand prix","silver","melies","audience","thriller award", "critics award","7th orbit award"]
         
         for tagname in tag_list:
-            tag_in_db = Tag.objects.filter(name=tagname)
-            if(len(tag_in_db)==0):
+            tag_in_db = Tag.objects.filter(name__exact=tagname)
+            if tag_in_db:
+                print("tag déjà en db:{tag}".format(tag=tagname))
+            else:
                 tag_type = get_object_or_404(Tag_Type, name="awards")
                 tag = Tag()
                 tag.name = tagname
@@ -84,8 +86,10 @@ class Command(BaseCommand):
             
         tag_list = ["european competition","international competition","thriller competition","7th orbit"]
         for tagname in tag_list:
-            tag_in_db = Tag.objects.filter(name=tagname)
-            if(len(tag_in_db)==0):
+            tag_in_db = Tag.objects.filter(name__exact=tagname)
+            if tag_in_db:
+                print("tag déjà en db:{tag}".format(tag=tagname))
+            else:
                 tag_type = get_object_or_404(Tag_Type, name="competitions")
                 tag = Tag()
                 tag.name = tagname
@@ -94,8 +98,10 @@ class Command(BaseCommand):
         
         tag_list = ["7th orbit special mention","thriller special mention"]
         for tagname in tag_list:
-            tag_in_db = Tag.objects.filter(name=tagname)
-            if(len(tag_in_db)==0):
+            tag_in_db = Tag.objects.filter(name__exact=tagname)
+            if tag_in_db:
+                print("tag déjà en db:{tag}".format(tag=tagname))
+            else:
                 tag_type = get_object_or_404(Tag_Type, name="awards")
                 tag = Tag()
                 tag.name = tagname
@@ -372,13 +378,23 @@ class Command(BaseCommand):
                                 jobname = crew.getAttribute("job")
                                 department = crew.getAttribute("department")
                                 
+                                department_in_db = Department.objects.filter(name=department)
+                                d = Department()
+                                if(len(department_in_db)==1):
+                                    d = department_in_db[0]
+                                elif(len(department_in_db)==0):
+                                    d.name = department
+                                    d.save() 
+                                else:
+                                    print(bcolors.FAIL+"[Department] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
+                                
                                 job_in_db = Job.objects.filter(jobname=jobname)
                                 j = Job()
                                 if(len(job_in_db)==1):
                                     j = job_in_db[0]
                                 elif(len(job_in_db)==0):
                                     j.jobname = jobname
-                                    j.department = department
+                                    j.department = d
                                     j.save() 
                                 else:
                                     print(bcolors.FAIL+"[Job] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)

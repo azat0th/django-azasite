@@ -8,7 +8,7 @@ from django.urls import reverse
 class Person(models.Model):
     name = models.CharField(max_length=200, default="")
     tmdb_id = models.IntegerField(default=0)
-    profile_path = models.CharField(max_length=200,default="")
+    profile_path = models.CharField(max_length=200,default="",blank=True)
     gender = models.IntegerField(default=0)   
     #imdb_id = models.CharField(max_length=50, null=True)
     #birthday = models.DateField(null=True)
@@ -27,6 +27,29 @@ class Person(models.Model):
     def __str__(self):
         return "{name}".format(name=self.name, tmdb_id=self.tmdb_id, gender=self.getGender(), profile_path=self.profile_path, pk=self.pk)
     
+    def get_profile_image_url_45(self):
+        url = ""
+        if(self.profile_path and self.profile_path!="None"):
+            url_img="https://image.tmdb.org/t/p/w45"
+            url = url_img + self.profile_path
+        return url
+    
+    def get_profile_image_url_185(self):
+        url = ""
+        if(self.profile_path and self.profile_path!="None"):
+            url_img="https://image.tmdb.org/t/p/w185"
+            url = url_img + self.profile_path
+        return url
+    
+    def get_profile_image_url_h632(self):
+        url = ""
+        if(self.profile_path and self.profile_path!="None"):
+            url_img="https://image.tmdb.org/t/p/h632"
+            url = url_img + self.profile_path
+        return url
+    
+#https://image.tmdb.org/t/p/w45/
+
 #this model represent the job of a person on a movie (acting or working)
 #    the flag is_actor is used to make difference between actor or crew
 #    if flag is_actor is true, then name is the name of the character
@@ -140,11 +163,15 @@ class Movie(models.Model):
         return self.title
     
 class Job(models.Model):
-    department = models.CharField(max_length=200, default="unknown")
+    department = models.ForeignKey('bifffidus.Department', related_name='department_job', on_delete=models.CASCADE, null=False)
     jobname = models.CharField(max_length=200, default="unknown")
     def __str__(self):        
-        return "{job} : {department}".format(department=self.department,job=self.jobname)
-    
+        return "{job}".format(job=self.jobname)
+
+class Department(models.Model):
+    name = models.CharField(max_length=200, default="unknown")
+    def __str__(self):        
+        return "{department}".format(department=self.name)
     
 class Crew(models.Model):
     job = models.ForeignKey('bifffidus.Job', related_name='job_person', on_delete=models.CASCADE, null=False)

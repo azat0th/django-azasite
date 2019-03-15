@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import Movie, Festival, Screen, Screening, Place, Genre, Person, Country, Production_Company,Spoken_Language
-from bifffidus.models import Tag, Crew, Cast, Job, Tag_Type
+from bifffidus.models import Tag, Crew, Cast, Job, Tag_Type, Department
 
 
 @admin.register(Movie)
@@ -41,10 +41,15 @@ class CastAdmin(admin.ModelAdmin):
 admin.site.register(Country)
 admin.site.register(Production_Company)
 admin.site.register(Spoken_Language)
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):    
     list_display = ('name','tag_type','icon_path','hidden')
 
+@admin.register(Job)
+class JobAdmin(admin.ModelAdmin):
+    list_display = ('jobname','department')
 
-admin.site.register(Job)
+admin.site.register(Department)
+
 admin.site.register(Tag_Type)

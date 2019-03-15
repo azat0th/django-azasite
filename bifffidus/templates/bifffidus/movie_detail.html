@@ -1,12 +1,21 @@
 {% extends 'bifffidus/base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="post text-light border">       
         <h1 class="blog-title">{{ movie.title|title }}</h1>
         <img src="{{ movie.get_poster_image_url_185 }}" class="img-thumbnail  mx-auto d-block"/>
-        <p>        
-        	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">IMDB link</a> 
-        	<a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id }}">TMDB link</a>
+        <p> 
+        	{% if movie.imdb_id %}      
+        	<a href="https://www.imdb.com/title/{{ movie.imdb_id }}">
+        		<img src="{% static 'img/imdb.icon.png' %}" alt="IMDb" data-toggle="tooltip" title="IMDb link">
+        	</a> 
+        	{% endif %}
+        	{% if movie.tmdb_id %}
+        	<a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id }}">
+        		<img src="{% static 'img/tmdb.icon.png' %}" alt="TMDB" data-toggle="tooltip" title="TMDB link">
+        	</a>
+        	{% endif %}
 		</p>
 		<p>Overview: {{ movie.overview }}</p>
 		<p>Release Date: {{ movie.release_date }}</p>
@@ -64,13 +73,13 @@
 		Screenings :
 		
 		{% for screening in screenings %}
-			<p>{{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>
+			<p>{{screening.festival.title}} - {{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>			
 		{% endfor %}
-		{% if tags|length > 0 %}
-			Tags : 
-			{% for tag in tags %}
-				<p><a href="{% url 'tag_detail' pk=tag.tag.pk %}">{{ tag.tag }}</a></p>
-			{% endfor %}
-		{% endif %}
+		
+		Tags : 
+		{% for tag in tags %}
+			<p>{{tag.name|title}}</p>
+		{% endfor %}
+		
     </div>
 {% endblock %}
