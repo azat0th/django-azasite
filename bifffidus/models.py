@@ -135,6 +135,19 @@ class Movie(models.Model):
                 director = director + "[" + c.person.name + "]"           
         return director
     
+    def get_person_crew(self,idp):
+        crews = []
+        for c in self.crew.all():
+            if(c.person.id == idp):
+                crews.append(c)
+        return crews
+
+    def get_person_crew_str(self,idp):
+        crews = ""
+        for c in self.crew.all():
+            if(c.person.id == idp):
+                crews += "[{job}]".format(job=c.job) 
+        return crews    
     
     def get_poster_image_url_185(self):
         url = "/static/img/movie.no-img.185.png"
@@ -165,6 +178,8 @@ class Movie(models.Model):
 class Job(models.Model):
     department = models.ForeignKey('bifffidus.Department', related_name='department_job', on_delete=models.CASCADE, null=False)
     jobname = models.CharField(max_length=200, default="unknown")
+    is_pertinent = models.BooleanField(default=False, blank=True)
+    
     def __str__(self):        
         return "{job}".format(job=self.jobname)
 
@@ -183,7 +198,7 @@ class Crew(models.Model):
     
 class Cast(models.Model):
     order = models.IntegerField(default=0)
-    character= models.CharField(max_length=100, default="")
+    character= models.CharField(max_length=350, default="")
     person = models.ForeignKey('bifffidus.Person', related_name='cast_person', on_delete=models.CASCADE, null=True)    
     #movie = models.ForeignKey(Movie, related_name="movie_cast", on_delete=models.CASCADE, null=True)    
     
@@ -261,7 +276,7 @@ class Tag(models.Model):
     hidden = models.BooleanField(default=False)
     
     def check_type(self):
-        if(self.tag_type.name != 'others' or self.name == "night"):
+        if((self.tag_type.name != 'others' or self.name == "night") and self.hidden is False):
             return True
         else:
             return False

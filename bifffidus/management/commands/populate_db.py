@@ -71,33 +71,24 @@ class Command(BaseCommand):
                 tag_type = Tag_Type()
                 tag_type.name = typetag
                 tag_type.save()
-        tag_list = ["grand prix","silver","melies","audience","thriller award", "critics award","7th orbit award"]
+                
         
-        for tagname in tag_list:
-            tag_in_db = Tag.objects.filter(name__exact=tagname)
-            if tag_in_db:
-                print("tag déjà en db:{tag}".format(tag=tagname))
-            else:
-                tag_type = get_object_or_404(Tag_Type, name="awards")
-                tag = Tag()
-                tag.name = tagname
-                tag.tag_type = tag_type
-                tag.save()
+        tag_list = [("grand prix",'img/raven.gold.png',0,False),
+                    ("silver",'img/raven.silver.png',0,False),
+                    ("melies",'img/melies.png',0,False),
+                    ("audience",'img/audience.png',0,False),
+                    ("thriller award",'img/thriller.award.png',0,False),
+                    ("critics award",'',0,False),
+                    ("7th orbit award",'img/7th.orbit.award.png',0,False),
+                    ("european competition","img/euro.comp.png",1,False),
+                    ("international competition","img/inter.comp.png",1,False),
+                    ("thriller competition","img/thriller.comp.png",1,False),
+                    ("7th orbit","img/7th.orbit.png",1,False),
+                    ("7th orbit special mention",'',0,True),
+                    ("thriller special mention",'',0,True)]
+        for tag_tuple in tag_list:
+            tagname=tag_tuple[0]
             
-        tag_list = ["european competition","international competition","thriller competition","7th orbit"]
-        for tagname in tag_list:
-            tag_in_db = Tag.objects.filter(name__exact=tagname)
-            if tag_in_db:
-                print("tag déjà en db:{tag}".format(tag=tagname))
-            else:
-                tag_type = get_object_or_404(Tag_Type, name="competitions")
-                tag = Tag()
-                tag.name = tagname
-                tag.tag_type = tag_type
-                tag.save()
-        
-        tag_list = ["7th orbit special mention","thriller special mention"]
-        for tagname in tag_list:
             tag_in_db = Tag.objects.filter(name__exact=tagname)
             if tag_in_db:
                 print("tag déjà en db:{tag}".format(tag=tagname))
@@ -105,10 +96,14 @@ class Command(BaseCommand):
                 tag_type = get_object_or_404(Tag_Type, name="awards")
                 tag = Tag()
                 tag.name = tagname
-                tag.tag_type = tag_type
-                tag.hidden = True
+                if(tag_tuple[2]==0):
+                    tag.tag_type = get_object_or_404(Tag_Type, name="awards")
+                elif(tag_tuple[2]==1):
+                    tag.tag_type = get_object_or_404(Tag_Type, name="competitions")
+                tag.hidden = tag_tuple[3]
+                tag.icon_path=tag_tuple[1]                 
                 tag.save()            
-            
+
                     
         for file in options['import_file']:
             DOMTree = minidom.parse(file)
@@ -151,7 +146,7 @@ class Command(BaseCommand):
                         print(bcolors.OKGREEN+"[Place] already in DB : {place}".format(place=place_name)+bcolors.ENDC)
                         p = Place.objects.get(name=place_name)
                     elif(len(place_in_db)==0):#pas encore en db
-                        p.name = place_name
+                        p.name = place_name.strip()
                         print(bcolors.WARNING+"[Place] to add : {place}".format(place=place_name)+bcolors.WARNING)
                         p.save()
                         screens = place.getElementsByTagName("screen")
@@ -159,7 +154,7 @@ class Command(BaseCommand):
                             screen_name = screen.firstChild.data
                             if(len(screen_name)>0):                            
                                 s = Screen()
-                                s.room_name = screen_name
+                                s.room_name = screen_name.strip()
                                 s.save()
                                 p.screen.add(s)                                            
                         
@@ -181,7 +176,7 @@ class Command(BaseCommand):
                 print(bcolors.HEADER+"***movie***"+bcolors.ENDC)
                 m = Movie()
                 
-                title = movie.getAttribute("title")
+                title = movie.getAttribute("title").strip()
                 imdb_id = movie.getAttribute("imdb_id")
                                                 
                 if(len(title)>=0):
@@ -206,32 +201,32 @@ class Command(BaseCommand):
                             
                             backdrop_path = ''
                             if(tmdb.getElementsByTagName('backdrop_path')[0].hasChildNodes()):
-                                backdrop_path = tmdb.getElementsByTagName('backdrop_path')[0].childNodes[0].data
+                                backdrop_path = tmdb.getElementsByTagName('backdrop_path')[0].childNodes[0].data.strip()
                                 #m.backdrop_path = backdrop_path
                             
                             original_language = ''
                             if(tmdb.getElementsByTagName('original_language')[0].hasChildNodes()):
-                                original_language = tmdb.getElementsByTagName('original_language')[0].childNodes[0].data
+                                original_language = tmdb.getElementsByTagName('original_language')[0].childNodes[0].data.strip()
                                 #m.original_language = original_language
                             
                             overview = ''
                             if(tmdb.getElementsByTagName('overview')[0].hasChildNodes()):
-                                overview = tmdb.getElementsByTagName('overview')[0].childNodes[0].data
+                                overview = tmdb.getElementsByTagName('overview')[0].childNodes[0].data.strip()
                                 #m.overview = overview
                             
                             original_title = ''
                             if(tmdb.getElementsByTagName('original_title')[0].hasChildNodes()):
-                                original_title = tmdb.getElementsByTagName('original_title')[0].childNodes[0].data
+                                original_title = tmdb.getElementsByTagName('original_title')[0].childNodes[0].data.strip()
                                 #m.original_title = original_title
                             
                             poster_path = ''
                             if(tmdb.getElementsByTagName('poster_path')[0].hasChildNodes()):
-                                poster_path = tmdb.getElementsByTagName('poster_path')[0].childNodes[0].data
+                                poster_path = tmdb.getElementsByTagName('poster_path')[0].childNodes[0].data.strip()
                                 #m.poster_path = poster_path
                             
                             
                             if(tmdb.getElementsByTagName('release_date')[0].hasChildNodes()):
-                                release_date_str = tmdb.getElementsByTagName('release_date')[0].childNodes[0].data
+                                release_date_str = tmdb.getElementsByTagName('release_date')[0].childNodes[0].data.strip()
                                 release_date = 0
                                 if(len(release_date_str)>8):
                                     release_date = datetime.datetime.strptime(release_date_str, '%Y-%m-%d')
@@ -239,14 +234,14 @@ class Command(BaseCommand):
                             
                             runtime = 0
                             if(tmdb.getElementsByTagName('runtime')[0].hasChildNodes()):
-                                runtime = tmdb.getElementsByTagName('runtime')[0].childNodes[0].data
+                                runtime = tmdb.getElementsByTagName('runtime')[0].childNodes[0].data.strip()
                                 if(runtime=="None"):
                                     runtime = 0
                                 #m.runtime = runtime
                             
                             tagline = ''
                             if(tmdb.getElementsByTagName('tagline')[0].hasChildNodes()):
-                                tagline = tmdb.getElementsByTagName('tagline')[0].childNodes[0].data
+                                tagline = tmdb.getElementsByTagName('tagline')[0].childNodes[0].data.strip()
                                 #m.tagline = tagline
                             
                             m = Movie.objects.create_movie(title, imdb_id, tmdb_id, overview, runtime, tagline, backdrop_path, poster_path, original_language, original_title, release_date)
@@ -255,7 +250,7 @@ class Command(BaseCommand):
                             genres_Node = tmdb.getElementsByTagName("genre")
                             print("[Genre] Found : {nb}".format(nb=len(genres_Node)))
                             for genre_N in genres_Node:
-                                genre = genre_N.childNodes[0].data
+                                genre = genre_N.childNodes[0].data.strip()
                                 genre_in_db = Genre.objects.filter(name__exact=genre) 
                                 if(len(genre_in_db)==1):
                                     print(bcolors.OKGREEN+"[Genre] already in DB : {genre}".format(genre=genre)+bcolors.ENDC)
@@ -274,7 +269,7 @@ class Command(BaseCommand):
                             companies_Node = tmdb.getElementsByTagName("production_company")
                             print("[Production_Company] found : {nb}".format(nb=len(companies_Node)))                    
                             for company_N in companies_Node:
-                                company = company_N.childNodes[0].data
+                                company = company_N.childNodes[0].data.strip()
                                 company_in_db = Production_Company.objects.filter(name__exact=company)
                                 if(len(company_in_db)==1):
                                     print(bcolors.OKGREEN+"[Production_Company] already in DB : {company}".format(company=company)+bcolors.ENDC)
@@ -293,7 +288,7 @@ class Command(BaseCommand):
                             countries_Node = tmdb.getElementsByTagName("country")
                             print("[Country] found: {nb}".format(nb=len(countries_Node)))
                             for country_N in countries_Node:
-                                country = country_N.childNodes[0].data
+                                country = country_N.childNodes[0].data.strip()
                                 country_in_db = Country.objects.filter(name__exact=country)
                                 if(len(country_in_db)==1):
                                     print(bcolors.OKGREEN+"[Country] already in DB : {country}".format(country=country)+bcolors.ENDC)
@@ -313,7 +308,7 @@ class Command(BaseCommand):
                             print("[Spoken_Language] found : {nb}".format(nb=len(spoken_language_Node)))
                             for lang_N in spoken_language_Node:
                                 if(lang_N.childNodes.length>0):
-                                    lang = lang_N.childNodes[0].data
+                                    lang = lang_N.childNodes[0].data.strip()
                                     lang_in_db = Spoken_Language.objects.filter(name__exact=lang)
                                     if(len(lang_in_db)==1):
                                         print(bcolors.OKGREEN+"[Spoken_Language] already in DB : {lang}".format(lang=lang)+bcolors.ENDC)
@@ -335,9 +330,9 @@ class Command(BaseCommand):
                             print("nb actor : {nb}".format(nb=nbactor))
                             count_nbactor = 0
                             for actor in actor_Node:                                
-                                character = actor.getAttribute("character")
+                                character = actor.getAttribute("character").strip()
                                 tmdb_id = actor.getAttribute("tmdb_id")
-                                name = actor.childNodes[0].data                            
+                                name = actor.childNodes[0].data.strip()                            
                                 #print("[Actor] %s as %s" % (name, character))
                                 #check if actor is in db
                                 p = Person()
@@ -375,60 +370,60 @@ class Command(BaseCommand):
                             print("nb crew : {nb}".format(nb=nbcrew))
                             count_nbcrew = 0
                             for crew in crew_Node:                                
-                                jobname = crew.getAttribute("job")
-                                department = crew.getAttribute("department")
-                                
-                                department_in_db = Department.objects.filter(name=department)
-                                d = Department()
-                                if(len(department_in_db)==1):
-                                    d = department_in_db[0]
-                                elif(len(department_in_db)==0):
-                                    d.name = department
-                                    d.save() 
-                                else:
-                                    print(bcolors.FAIL+"[Department] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
-                                
-                                job_in_db = Job.objects.filter(jobname=jobname)
-                                j = Job()
-                                if(len(job_in_db)==1):
-                                    j = job_in_db[0]
-                                elif(len(job_in_db)==0):
-                                    j.jobname = jobname
-                                    j.department = d
-                                    j.save() 
-                                else:
-                                    print(bcolors.FAIL+"[Job] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
-                                tmdb_id = crew.getAttribute("tmdb_id")
-                                name = crew.childNodes[0].data
-                                count_nbcrew = count_nbcrew + 1
-                                
-                                p = Person()
-                                person_in_db = Person.objects.filter(tmdb_id=tmdb_id)
-                                
-                                if(len(person_in_db)==1):
-                                    print(bcolors.OKGREEN+"[Person] already in DB [{count_nbcrew}/{nbcrew}]: {name}                       ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
-                                    p = person_in_db[0]
+                                jobname = crew.getAttribute("job").strip()
+                                department = crew.getAttribute("department").strip()
+                                if(department!="Crew" and department!=""):
+                                    department_in_db = Department.objects.filter(name=department)
+                                    d = Department()
+                                    if(len(department_in_db)==1):
+                                        d = department_in_db[0]
+                                    elif(len(department_in_db)==0):
+                                        d.name = department
+                                        d.save() 
+                                    else:
+                                        print(bcolors.FAIL+"[Department] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
                                     
-                                elif(len(person_in_db)==0):
-                                    print(bcolors.WARNING+"[Person] to add [{count_nbcrew}/{nbcrew}]: {name}                              ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
-                                    p.name = name
-                                    p.tmdb_id = tmdb_id
-                                    p.profile_path = crew.getAttribute("profile_path")
-                                    p.gender = crew.getAttribute("gender")
-                                    p.save()
+                                    job_in_db = Job.objects.filter(jobname=jobname)
+                                    j = Job()
+                                    if(len(job_in_db)==1):
+                                        j = job_in_db[0]
+                                    elif(len(job_in_db)==0):
+                                        j.jobname = jobname
+                                        j.department = d
+                                        j.save() 
+                                    else:
+                                        print(bcolors.FAIL+"[Job] Erreur lors de la correspondance avec la DB"+bcolors.ENDC)
+                                    tmdb_id = crew.getAttribute("tmdb_id")
+                                    name = crew.childNodes[0].data.strip()
+                                    count_nbcrew = count_nbcrew + 1
                                     
-                                else:
-                                    print(bcolors.FAIL+"[Person] Erreur lors de la correspondance avec la DB:")
-                                    print("[Person] Nombre de Persons trouvés en db= {nb}".format(nb=len(person_in_db))+bcolors.ENDC)
-
-                                c = Crew()
-                                
-                                c.job = j
-                                c.person = p
-                                #c.movie = m
-                                c.save()
-                                m.crew.add(c)                    
-                                m.save()                                
+                                    p = Person()
+                                    person_in_db = Person.objects.filter(tmdb_id=tmdb_id)
+                                    
+                                    if(len(person_in_db)==1):
+                                        print(bcolors.OKGREEN+"[Person] already in DB [{count_nbcrew}/{nbcrew}]: {name}                       ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
+                                        p = person_in_db[0]
+                                        
+                                    elif(len(person_in_db)==0):
+                                        print(bcolors.WARNING+"[Person] to add [{count_nbcrew}/{nbcrew}]: {name}                              ".format(name=name, count_nbcrew=count_nbcrew, nbcrew=nbcrew)+bcolors.ENDC, end='\r')                                    
+                                        p.name = name
+                                        p.tmdb_id = tmdb_id
+                                        p.profile_path = crew.getAttribute("profile_path")
+                                        p.gender = crew.getAttribute("gender")
+                                        p.save()
+                                        
+                                    else:
+                                        print(bcolors.FAIL+"[Person] Erreur lors de la correspondance avec la DB:")
+                                        print("[Person] Nombre de Persons trouvés en db= {nb}".format(nb=len(person_in_db))+bcolors.ENDC)
+    
+                                    c = Crew()
+                                    
+                                    c.job = j
+                                    c.person = p
+                                    #c.movie = m
+                                    c.save()
+                                    m.crew.add(c)                    
+                                    m.save()                                
                                 
                         else:
                             print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    
@@ -470,7 +465,7 @@ class Command(BaseCommand):
                             
                             for tag_Node in tags:
                                 if(len(tag_Node.firstChild.data)>0):
-                                    tagname = tag_Node.firstChild.data
+                                    tagname = tag_Node.firstChild.data.strip()
                                     t = Tag()                                    
                                     tag_in_db = Tag.objects.filter(name__exact=tagname)
                                     if(len(tag_in_db)==1): #déjà en db
@@ -502,3 +497,21 @@ class Command(BaseCommand):
                 print("\033[93m***end movie***\033[0m")
             print(bcolors.WARNING+"Nombre de films ajoutés à la DB : {nb}".format(nb=movies_added)+bcolors.ENDC)
             
+        joblist = ['Graphic Novel','Book','Story Artist', 'Comic Book','Supervising Art Director', 'Short Story',
+          'Special Effects Supervisor','Original Story','Author','Story','Characters','Novel',
+          'Original Music Composer','Visual Effects Supervisor', 'Art Direction', 'Editor', 'Director of Photography',
+          'Music', 'Screenplay', 'Director', 'Producer']
+        
+        for jobname in joblist:
+            jobs_in_db = Job.objects.filter(jobname=jobname)
+            if(len(jobs_in_db)==1):
+                j = get_object_or_404(Job, jobname=jobname)
+                j.is_pertinent = True
+                j.save()
+                print("correspondance avec {job}".format(job=jobname))
+            elif(len(jobs_in_db)==0):
+                print("pas de correspondance avec {job}".format(job=jobname))
+            else:
+                print("erreur avec {job}".format(job=jobname))
+                
+                

@@ -2,18 +2,25 @@
 
 {% block content %}
 
-    <div class="post border border-danger">       
+    <div class="post text-light mx-auto">       
         <h1 class="">{{ tag.name|title }}</h1>
         <p>{{movies|length  }} movies found</p>
         {% regroup movies by festival as movies_by_festival %}
         
         {% for mbf in movies_by_festival %}
         <h3>{{mbf.grouper}}({{ mbf.list|length }} movies)</h3>
-			<ul> 
+			<div class="row"> 
         	{% for movie in mbf.list %}
-				<li class="border border-danger"><h5><a href="{% url 'movie_detail' pk=movie.id %}">{{ movie.title|title }}</a></h5></li>   	
+				<div class="column border border-danger">
+					
+					<a  href="{% url 'movie_detail' pk=movie.pk %}">
+						<img src="{{movie.get_poster_image_url_92}}">
+					</a>
+					<h5><a href="{% url 'movie_detail' pk=movie.id %}">{{ movie.title|title }}</a></h5>
+					<h6>{{movie.get_director}}</h6>
+				</div>   	
    			{% endfor %}
-			</ul>
+			</div>
    		{% endfor %}
     </div>
     

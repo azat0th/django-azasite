@@ -48,7 +48,7 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
-    list_display = ('jobname','department')
+    list_display = ('jobname','department','is_pertinent')
 
 admin.site.register(Department)
 

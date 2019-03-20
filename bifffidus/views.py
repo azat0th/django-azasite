@@ -148,9 +148,6 @@ def person_list(request):
     
     return render(request, 'bifffidus/person_list.html', {'persons': persons, 'nb_persons': nb_persons, 'form':form, 'search':search})
 
-def person_by_department(request, pk):
-    departments = Department.objects.filter(department_id=pk)
-    return render(request, 'bifffidus/person_by_department.html', {})
 
 def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)
@@ -175,7 +172,7 @@ def person_detail(request, pk):
     return render(request, 'bifffidus/person_detail.html', {'person': person, 'movie_cast' : movie_cast, 'movie_crew' : movie_crew})
 
 def tag_list(request):
-    tags = Tag.objects.order_by('tag_type','name').all
+    tags = Tag.objects.filter(hidden=False).order_by('tag_type','name').all
     return render(request, 'bifffidus/tag_list.html', {'tags': tags })
 
 def tag_detail(request, pk):

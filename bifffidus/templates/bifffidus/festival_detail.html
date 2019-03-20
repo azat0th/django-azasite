@@ -21,7 +21,7 @@
 	
     {% regroup screenings by view_date as screenings_by_day %}
     {% for screening_list in screenings_by_day %}
-    <div class=" text-light ">
+    <div class="text-light">
     	
     	
     	<a  href="{% url 'movie_by_date' year=screening_list.1.0.screening_datetime|date:"Y" month=screening_list.1.0.screening_datetime|date:"m" day=screening_list.1.0.screening_datetime|date:"d" %}">

@@ -57,18 +57,49 @@
 		{% endif %}	
 
 		<p>Crew:</p>
-		<ul>
+		<table class="table table-striped table-dark">
+		  	<thead>
+		    	<tr>		      
+		      		<th scope="col">Name</th>
+		      		<th scope="col">Job</th>
+		      		<th scope="col"></th>
+		    	</tr>
+		  	</thead>
+		  	<tbody>
 		{% for cw in movie.crew.all %}
-			<li>[{{cw.job.jobname}}]:<a href="{% url 'person_detail' pk=cw.person.id %}">{{cw.person.name}}</a></li>
+			{% if cw.job.is_pertinent %}			
+				<tr>
+		    		<th scope="row"><a href="{% url 'person_detail' pk=cw.person.id %}">{{ cw.person.name }}</a></th>
+		    		<td>{{cw.job.jobname}}</td>		      		
+		      		<td>{% if cw.person.profile_path %}<img src="{{ cw.person.get_profile_image_url_45 }}" alt="" class=""/>{% endif %}</td>		      
+		    	</tr>			
+			{% endif %}
 		{% endfor %}
-		</ul>
+			</tbody>
+		</table>
 
 		<p>Casting:</p>
-		<ul>
-		{% for c in movie.cast.all %}
-			<li><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a>{%if c.character %} as {{c.character}}{% endif %}</li>
-		{% endfor %}
-		</ul>
+		<table class="table table-striped table-dark">
+		  	<thead>
+		    	<tr>		      
+		      		<th scope="col">Name</th>
+		      		<th scope="col">Character</th>
+		      		<th scope="col"></th>
+		    	</tr>
+		  	</thead>
+		  	<tbody>
+			{% for c in movie.cast.all %}
+				{% if c.order < 10 %}
+				<tr>
+		    		<th scope="row"><a href="{% url 'person_detail' pk=c.person.id %}">{{ c.person.name }}</a></th>
+		      		<td>{{c.character}}</td>
+		      		<td>{% if c.person.profile_path %}<img src="{{ c.person.get_profile_image_url_45 }}" alt="" class=""/>{% endif %}</td>		      
+		    	</tr>
+				{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+
 		
 		Screenings :
 		
@@ -76,10 +107,12 @@
 			<p>{{screening.festival.title}} - {{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>			
 		{% endfor %}
 		
-		Tags : 
-		{% for tag in tags %}
-			<p>{{tag.name|title}}</p>
-		{% endfor %}
+		{% if tags %} 
+			Tags : 
+			{% for tag in tags %}
+				<p>{{tag.name|title}}</p>
+			{% endfor %}
+		{% endif %}
 		
     </div>
 {% endblock %}
