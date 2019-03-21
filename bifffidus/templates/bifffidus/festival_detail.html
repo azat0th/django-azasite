@@ -34,12 +34,12 @@
        		{% for screening in screening_list.list %}
        			
        			{% if screen.id is screening.screen.id %}       			
-       			<div class="column border">
-	       			<a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">
+       			<div class="column border" data-href="{% url 'movie_detail' pk=screening.movie_id %}">
+	       			
 	       				<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/>
-	       			</a>
+	       			
 	       			<h5>
-	       				<a  href="{% url 'movie_detail' pk=screening.movie_id %}" class="">{{screening.movie.title|title}}</a>
+	       				{{screening.movie.title|title}}
 	       			</h5>
       				<p>{{screening.movie.get_director}}</p>
     	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
