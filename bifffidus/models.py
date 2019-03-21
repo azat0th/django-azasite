@@ -127,7 +127,8 @@ class Movie(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     objects = MovieManager()    
-    
+    def get_year(self):
+        return self.release_date.year
     def get_director(self):
         director = ""
         for c in self.crew.all() :
