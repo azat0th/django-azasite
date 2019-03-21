@@ -56,9 +56,9 @@
 			</p>
 		{% endif %}	
 
-		<p>Crew:</p>
+		<h3>Crew</h3>
 		<table class="table table-striped table-dark">
-		  	<thead>
+		  	<thead>		  		
 		    	<tr>		      
 		      		<th scope="col">Name</th>
 		      		<th scope="col">Job</th>
@@ -70,7 +70,7 @@
 			{% if cw.job.is_pertinent %}			
 				<tr>
 		    		<th scope="row"><a href="{% url 'person_detail' pk=cw.person.id %}">{{ cw.person.name }}</a></th>
-		    		<td>{{cw.job.jobname}}</td>		      		
+		    		<td>{{cw.job.jobname}}</td>      		
 		      		<td>{% if cw.person.profile_path %}<img src="{{ cw.person.get_profile_image_url_45 }}" alt="" class=""/>{% endif %}</td>		      
 		    	</tr>			
 			{% endif %}
@@ -78,7 +78,7 @@
 			</tbody>
 		</table>
 
-		<p>Casting:</p>
+		<h3>Casting</h3>
 		<table class="table table-striped table-dark">
 		  	<thead>
 		    	<tr>		      
@@ -101,18 +101,32 @@
 		</table>
 
 		
-		Screenings :
-		
-		{% for screening in screenings %}
-			<p>{{screening.festival.title}} - {{ screening.screening_datetime|date:"D d/m/Y H:i" }} ({{ screening.screen }})</p>			
-		{% endfor %}
-		
-		{% if tags %} 
-			Tags : 
-			{% for tag in tags %}
-				<p>{{tag.name|title}}</p>
+		<h3>Screenings</h3>
+		<table class="table table-striped table-dark">
+			<tbody>
+			{% for screening in screenings %}
+				<tr>
+				<td>{{screening.festival.title}}</td>
+				<td>{{ screening.screening_datetime|date:"D d/m/Y H:i" }}({{ screening.screen }})</td>
+				</tr>				
 			{% endfor %}
+			</tbody>
+		</table>
+
+		{% if tags %}
+		<h3>Tags</h3>			
+		<table class="table table-striped table-dark">
+			<tbody>					 
+				{% for tag in tags %}
+					<tr>
+						<td>
+							{{tag.name|title}}
+							{% if tag.icon_path %}
+								<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}"></td></tr>
+							{% endif %}
+				{% endfor %}
+			</tbody>
+		</table>
 		{% endif %}
-		
     </div>
 {% endblock %}
