@@ -11,6 +11,7 @@
   text-align: center;
   /*color: red;*/
   font-family: 'Changa';
+  color: white;
 }
 
 .content {
@@ -19,7 +20,7 @@
 
 h1, h2, h3, h4, h5 {
     font-family: 'Changa', cursive;
-    color: white;
+    
 }
 .bifff-red { color: red;
 }
@@ -104,4 +105,19 @@ img {
   }
 }
 
+[data-href] {
+    cursor: pointer;
+    background-color: black;
+        
+}
+[data-href]:hover {
+    cursor: pointer;
+    color: yellow;
+        
+}
+[data-href].h2:hover {
+    cursor: pointer;
+    color: yellow;
+   
+}
 /*----------->*/

@@ -7,16 +7,19 @@
     {% regroup tags by tag_type as tags_by_type %}
     {% for gtags in tags_by_type %}
     	<h5>{{ gtags.grouper|title}}</h5>
-    	{% for tag in gtags.list %}
-    		<div class="border border-danger">
-	        <h3 class=''>
-	        	<a  href="{% url 'tag_detail' pk=tag.pk %}">{{ tag.name|title }}</a>
-	        	{% if tag.icon_path %}
-	        	<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}">
-	        	{% endif %}
-	        </h3>
-        </div>
-    	{% endfor %}
+    	<table class="table table-dark table-hover border border-danger">
+	  		<tbody>	
+	    	{% for tag in gtags.list %}
+		    	<tr data-href="{% url 'tag_detail' pk=tag.pk %}">
+		    		<th scope="row"><h2>{{ tag.name|title }}</h2></th>
+		      		<td>
+			        	{% if tag.icon_path %}
+			    	    	<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}">
+			        	{% endif %}
+		      		</td>	      		      		
+		    	</tr>
+    		{% endfor %}
+	    	</tbody>
+	    </table>     		
     {% endfor %}
-    
 {% endblock content %}

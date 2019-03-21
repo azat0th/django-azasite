@@ -235,6 +235,12 @@ class Festival(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
         
+    def get_small_poster_image_url(self):
+        url = ""
+        if(self.poster_path):            
+            url = "/static/img/small-" + self.poster_path
+        return url
+    
     def get_poster_image_url(self):
         url = ""
         if(self.poster_path):            

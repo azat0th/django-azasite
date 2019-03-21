@@ -24,19 +24,22 @@
 	  </ul>
 	</nav>
 
+	<table class="table table-dark table-hover border border-danger">
+	  	<tbody>	
     {% for person in persons %}
-        <div class="border border-danger row">
-       		<div class="col-md-8">
-        		<h5><a  href="{% url 'person_detail' pk=person.pk %}">{{ person.name }}</a></h5>
-        	</div>
-       		<div class="col-md-4">
-        	{% if person.profile_path %}        		
-       			<img src="{{ person.get_profile_image_url_45 }}" alt="" class=""/>        		
-        	{% endif %}
-       		</div>
-        </div>
+	    	<tr data-href="{% url 'person_detail' pk=person.pk %}">
+	    		<th scope="row"><h2>{{ person.name }}</h2></th>
+	      		<td>
+	      			{% if person.profile_path %}
+	      				<img src="{{ person.get_profile_image_url_45 }}" class="mx-auto d-block"/>
+	      			{% endif %}
+	      		</td>	      		      		
+	    	</tr>
     {% endfor %}
-	
+    	</tbody>
+    </table>    
+
+
 	<nav aria-label="Person List Navigation">
 	  <ul class="pagination">
 	  	{% if persons.has_previous %}
