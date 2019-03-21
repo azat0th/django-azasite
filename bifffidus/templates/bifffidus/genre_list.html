@@ -5,7 +5,7 @@
 	<table class="table table-dark table-hover border border-danger">
 	  	<tbody>	
     {% for genre in genres %}
-	    	<tr data-href="{% url 'genre_detail' pk=genre.pk %}">
+	    	<tr data-href="{% url 'genre_detail' pk=genre.pk %}#page-start">
 	    		<th scope="row"><h4>{{ genre.name|title }}</h4></th>      		      		
 	    	</tr>
     {% endfor %}

@@ -63,27 +63,27 @@
           <a class="nav-link bifff-menu" href="{% url 'main_page' %}">Main</a>
         </li>      
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'festival_list' %}">Festivals</a>
+          <a class="nav-link bifff-menu" href="{% url 'festival_list' %}#page-start">Festivals</a>
         </li>
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'movie_list' %}">Movies</a>
+          <a class="nav-link bifff-menu" href="{% url 'movie_list' %}#page-start">Movies</a>
         </li>
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'person_list' %}">Persons</a>
+          <a class="nav-link bifff-menu" href="{% url 'person_list' %}#page-start">Persons</a>
         </li>        
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'genre_list' %}">Genres</a>
+          <a class="nav-link bifff-menu" href="{% url 'genre_list' %}#page-start">Genres</a>
         </li>
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'tag_list' %}">Tags</a>
+          <a class="nav-link bifff-menu" href="{% url 'tag_list' %}#page-start">Tags</a>
         </li>
         <li class="nav-item border border-danger text-center">
-          <a class="nav-link bifff-menu" href="{% url 'country_list' %}">Countries</a>
+          <a class="nav-link bifff-menu" href="{% url 'country_list' %}#page-start">Countries</a>
         </li>
       </ul>
       <hr class="d-sm-none">
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-10" id="page-start">
       {% block content %}
       {% endblock %}
     </div>

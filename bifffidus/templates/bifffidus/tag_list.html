@@ -10,7 +10,7 @@
     	<table class="table table-dark table-hover border border-danger">
 	  		<tbody>	
 	    	{% for tag in gtags.list %}
-		    	<tr data-href="{% url 'tag_detail' pk=tag.pk %}">
+		    	<tr data-href="{% url 'tag_detail' pk=tag.pk %}#page-start">
 		    		<th scope="row"><h2>{{ tag.name|title }}</h2></th>
 		      		<td>
 			        	{% if tag.icon_path %}

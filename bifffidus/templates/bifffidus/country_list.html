@@ -4,7 +4,7 @@
 	<table class="table table-dark table-hover border border-danger">
 	  	<tbody>	
     {% for country in countries %}
-	    	<tr data-href="{% url 'country_detail' pk=country.pk %}">
+	    	<tr data-href="{% url 'country_detail' pk=country.pk %}#page-start">
 	    		<th scope="row"><h4>{{ country.name }}</h4></th>	      		      		
 	    	</tr>
     {% endfor %}

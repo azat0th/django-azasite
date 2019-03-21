@@ -12,7 +12,8 @@
 	    		<td>
 	    			<h5>{{ movie.title|title }}</h5>
 	    			<p>{{ movie.get_director }}</p>
-	    			<p>{{ movie.get_year}}</p>	    			
+	    			<p>{{ movie.get_year}}</p>
+	    			<p>{% for country in movie.country.all %}[{{country.name }}]{% endfor %}</p>			
 	    		</td>      		      		
 	    	</tr>
    			{% endfor %}
