@@ -16,6 +16,8 @@
 		jQuery(document).ready(function($) {
 		    $('*[data-href]').on('click', function() {
 		        window.location = $(this).data("href");
+		        
+		        $(this).css('cursor', 'wait');
 		    });
 		});
   </script>
