@@ -181,14 +181,11 @@ class Command(BaseCommand):
                                                 
                 if(len(title)>=0):
                     print(bcolors.OKGREEN+"{title} [imdb:{imdb_id}]".format(title=title, imdb_id=imdb_id, tmdb_id=m.tmdb_id)+bcolors.ENDC)                    
-                    if(Movie.objects.filter(title__exact=title)):
-                        print(bcolors.FAIL+'A Movie with the same title is already in DB'+bcolors.ENDC)
                     if(len(imdb_id)>0 and Movie.objects.filter(imdb_id__exact=imdb_id)):
                         print(bcolors.FAIL+'A Movie with the same imdb_id is already in DB'+bcolors.ENDC)
                         m = get_object_or_404(Movie,imdb_id=imdb_id)
-                    else:                        
-                        m.title = ""+title
-                        m.imdb_id = ""+imdb_id                        
+                    else:
+                                               
                         if(movie.getElementsByTagName("tmdb")):
                             
                             tmdb = movie.getElementsByTagName("tmdb")[0]
@@ -423,13 +420,13 @@ class Command(BaseCommand):
                                     #c.movie = m
                                     c.save()
                                     m.crew.add(c)                    
-                                    m.save()                                
+                                                                   
                                 
                         else:
                             print(bcolors.FAIL+"[TMDB_ID]: Empty"+bcolors.ENDC)    
-                            m = Movie.objects.create_movie(title, "", "", "", 0, "", "", "", "", "",0)
+                            m = Movie.objects.create_movie(title, imdb_id, "", "", 0, "", "", "", "", "",0)                         
                         print('\n')
-
+                    m.save()
                     screenings = movie.getElementsByTagName("screening")
                     print("[Screenings] found: {nb}".format(nb=len(screenings)))
                     for screening_Node in screenings:

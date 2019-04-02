@@ -83,7 +83,7 @@ def movie_by_festival(request, pk):
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
 
 def festival_list(request):
-    festivals = Festival.objects.order_by('start_date').all
+    festivals = Festival.objects.order_by('-start_date').all
     return render(request, 'bifffidus/festival_list.html', {'festivals': festivals})
 
 def festival_detail(request, pk):
