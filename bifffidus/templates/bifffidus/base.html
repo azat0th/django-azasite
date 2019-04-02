@@ -16,11 +16,15 @@
 		jQuery(document).ready(function($) {
 		    $('*[data-href]').on('click', function() {
 		        window.location = $(this).data("href");
-		        $('body').css('cursor', 'wait');
-		        $(this).css('cursor', 'wait');
 		    });
 		});
   </script>
+  <script>
+  		jQuery(document).ready(function(){
+		  $('[data-toggle="popover"]').popover();
+		});
+		</script>
+
   <style>
   .fakeimg {
     height: 200px;

@@ -120,4 +120,11 @@ img {
     color: yellow;
    
 }
+
+.card-header:hover {
+	cursor: pointer;
+	color: yellow;
+	background-color: dimgray;
+	
+}
 /*----------->*/

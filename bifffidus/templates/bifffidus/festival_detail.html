@@ -1,6 +1,7 @@
 {% extends 'bifffidus/base.html' %}
 {% load static %}
 {% block content %}
+
 	<div class="border text-light">		
 		<h2 class='blog-title'>{{ festival.title }}</h2>
 		{% if festival.poster_path %}
@@ -15,46 +16,54 @@
 			{% endfor %}
 		</p>
 		{% endfor %}	            
-	</div>
-	
+	</div>	
 	<a href="{% url 'movie_by_festival' pk=festival.pk %}">Festival Movie List</a>
 	
     {% regroup screenings by view_date as screenings_by_day %}
     {% for screening_list in screenings_by_day %}
-    <div class="text-light">
+    <div class="card text-light bifff-bg border">
+    	<div class="card-header" data-toggle="collapse" data-target="#day{{screening_list.grouper|date:"dmY"}}"> 
+	    		{{screening_list.grouper|date:"D d/m/Y"|title}}
+	    	<span class="badge bifff-badge">
+	    		{{ screening_list.list|length }}
+	    	</span>
+    	</div>
     	
-    	
-    	<a  href="{% url 'movie_by_date' year=screening_list.1.0.screening_datetime|date:"Y" month=screening_list.1.0.screening_datetime|date:"m" day=screening_list.1.0.screening_datetime|date:"d" %}">
-    	{{screening_list.grouper|title}}</a><span class="badge bifff-badge">{{ screening_list.list|length }}</span>
-    	
-    	
-    	
+    	<div id="day{{screening_list.grouper|date:'dmY'}}" class="collapse">
     	{% for screen in screens %}
-			<div class="row">
-       		{% for screening in screening_list.list %}
-       			
-       			{% if screen.id is screening.screen.id %}       			
-       			<div class="column border" data-href="{% url 'movie_detail' pk=screening.movie_id %}">
+    		<div class="card-body">
+				<div class="row">
+	       		{% for screening in screening_list.list %}
 	       			
-	       				<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/>
-	       			
-	       			<h5>
-	       				{{screening.movie.title|title}}
-	       			</h5>
-      				<p>{{screening.movie.get_director}}</p>
-    	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
-       				<p>{{screening.screen.room_name|title}}</p>       				
-       				{% for tag in screening.tag.all %}
-       					{% if tag.icon_path %}
-       					<img src="{% static tag.icon_path %}" alt="{{tag|title}}" data-toggle="tooltip" title="{{tag|title}}">
-       					{% endif %}       					       					       				
-       				{% endfor %}
-       			</div>	
-           		{% endif %}
-           		
-           	{% endfor %}
+	       			{% if screen.id is screening.screen.id %}       			
+	       			<div class="column border">
+		       			<div data-href="{% url 'movie_detail' pk=screening.movie_id %}">
+		       				<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/>	       			
+			       			<h5>
+			       				{{screening.movie.title|title}}
+			       			</h5>
+		      				<p>{{screening.movie.get_director}}</p>
+		      				<p>{{screening.movie.runtime}}</p>
+		    	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
+		       				<p>{{screening.screen.room_name|title}}</p>
+	       				</div>
+	       				<div>       				
+		       				{% for tag in screening.tag.all %}
+		      					{% if tag.icon_path %}
+		      						<a  data-toggle="popover" title="{{tag|title}}" data-content="">
+		       							<img src="{% static tag.icon_path %}" alt="{{tag|title}}" data-toggle="tooltip" title="{{tag|title}}">
+		       						</a>
+		       					{% endif %}       					       					       				
+		       				{% endfor %}
+	       				</div>
+	       			</div>	
+	           		{% endif %}
+	           		
+	           	{% endfor %}
+	           	</div>
            	</div>			       	
        	{% endfor %}
+       	</div>
    	</div>
     {% endfor %}
 
