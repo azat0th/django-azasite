@@ -45,7 +45,7 @@
     	   			<p>{{screening.screening_datetime|date:"H:i"}}</p> 
        				<p>{{screening.screen.room_name|title}}</p>       				
        				{% for tag in screening.tag.all %}
-       					{% if tag.check_type %}
+       					{% if tag.icon_path %}
        					<img src="{% static tag.icon_path %}" alt="{{tag|title}}" data-toggle="tooltip" title="{{tag|title}}">
        					{% endif %}       					       					       				
        				{% endfor %}
