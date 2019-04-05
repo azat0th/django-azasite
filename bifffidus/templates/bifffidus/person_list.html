@@ -1,7 +1,7 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
 
-	<form action="/bifffidus/person/" method="get">
+	<form action="/person/" method="get">
    		{% csrf_token %}
    		{{ form }}
    		<input type="submit" value="Submit">
