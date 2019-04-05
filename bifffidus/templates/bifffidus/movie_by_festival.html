@@ -5,8 +5,7 @@
 
 {% for movie in movies %}
 	<div class="border text-light">		
-		<p><a  href="{% url 'movie_detail' pk=movie.pk %}"><h2 class='blog-title'>{{ movie.movie.title }}</h2></a></p>
-		<p>{{movie}}</p>	            
+		<p><a  href="{% url 'movie_detail' pk=movie.pk %}"><h2 class='blog-title'>{{movie.title }}</h2></a></p>			            
 	</div>
 {% endfor %}
 {% endblock content %}

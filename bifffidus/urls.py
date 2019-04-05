@@ -9,8 +9,9 @@ urlpatterns = [
     path('festival/', views.festival_list,  name='festival_list'),
     path('festival/<int:pk>/', views.festival_detail,  name='festival_detail'),
 
-    path('movielist/<int:year>/<int:month>/<int:day>/', views.movie_by_date, name='movie_by_date'),
-    path('movielist/<int:pk>/', views.movie_by_festival, name='movie_by_festival'),
+    path('festival/<int:year>/<int:month>/<int:day>/', views.movie_by_date, name='movie_by_date'),
+    path('festival/<int:pk>/list/', views.movie_by_festival, name='movie_by_festival'),
+    path('festival/<int:pk>/competitions/', views.movie_by_festival_competitions, name='movie_by_festival_competitions'),
     path('movie/', views.movie_list, name='movie_list'),    
     
     path('person/', views.person_list, name='person_list'),

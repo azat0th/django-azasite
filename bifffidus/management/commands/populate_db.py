@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         #initiate DB with default vals :
-        type_list=["competitions","awards","others"]
+        type_list=["competitions","awards","premieres","others"]
         for typetag in type_list:
             tag_in_db = Tag_Type.objects.filter(name__exact=typetag)
             if tag_in_db:
@@ -72,14 +72,24 @@ class Command(BaseCommand):
                 tag_type.name = typetag
                 tag_type.save()
                 
-        
+        #tag_list = [("tag name",'img/path',num tagtype, is_hidden)]
+        #num tagtype: 
+        #    0 = awards
+        #    1 = competitions
+        #    2 = premieres   
         tag_list = [("grand prix",'img/raven.gold.png',0,False),
                     ("silver",'img/raven.silver.png',0,False),
                     ("melies",'img/melies.png',0,False),
                     ("audience",'img/audience.png',0,False),
                     ("thriller award",'img/thriller.award.png',0,False),
-                    ("critics award",'',0,False),
+                    ("critics award",'img/critics.award.png',0,False),
                     ("7th orbit award",'img/7th.orbit.award.png',0,False),
+                    ("belgian premiere",'img/star-bp.png',2,False),
+                    ("european premiere",'img/star-ep.png',2,False),
+                    ("bifff premiere",'img/star-fp.png',2,False),
+                    ("international premiere",'img/star-ip.png',2,False),
+                    ("world premiere",'img/star-wp.png',2,False),
+                    ("critics selection",'img/critics.selection.png',1,False),
                     ("european competition","img/euro.comp.png",1,False),
                     ("international competition","img/inter.comp.png",1,False),
                     ("thriller competition","img/thriller.comp.png",1,False),
@@ -92,16 +102,21 @@ class Command(BaseCommand):
             tag_in_db = Tag.objects.filter(name__exact=tagname)
             if tag_in_db:
                 print("tag déjà en db:{tag}".format(tag=tagname))
-            else:
-                tag_type = get_object_or_404(Tag_Type, name="awards")
+            else:                
                 tag = Tag()
                 tag.name = tagname
+                tag.icon_path=tag_tuple[1]
+                
                 if(tag_tuple[2]==0):
                     tag.tag_type = get_object_or_404(Tag_Type, name="awards")
                 elif(tag_tuple[2]==1):
                     tag.tag_type = get_object_or_404(Tag_Type, name="competitions")
+                elif(tag_tuple[2]==2):
+                    tag.tag_type = get_object_or_404(Tag_Type, name="premieres")
+                else:
+                    tag.tag_type = get_object_or_404(Tag_Type, name="others")
+                    
                 tag.hidden = tag_tuple[3]
-                tag.icon_path=tag_tuple[1]                 
                 tag.save()            
 
                     

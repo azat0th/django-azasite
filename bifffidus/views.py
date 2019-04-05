@@ -76,8 +76,11 @@ def movie_detail(request, pk):
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags':tags})
 
 def movie_by_festival(request, pk):        
-    movies = Screening.objects.filter(festival_id=pk)
-    
+    screenings = Screening.objects.filter(festival_id=pk).order_by('movie__title')
+    movies = []
+    for screening in screenings :
+        if screening.movie not in movies:
+            movies.append(screening.movie)
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
@@ -85,6 +88,22 @@ def movie_by_festival(request, pk):
 def festival_list(request):
     festivals = Festival.objects.order_by('-start_date').all
     return render(request, 'bifffidus/festival_list.html', {'festivals': festivals})
+
+def movie_by_festival_competitions(request, pk):
+    festival = get_object_or_404(Festival, pk=pk)
+    tags = Tag.objects.filter(tag_type__name="competitions")
+    screenings = Screening.objects.filter(festival_id=pk).filter(tag__tag_type__name="competitions")
+    
+    competitions = []
+    for tag in tags:
+        movies = []        
+        for screening in screenings:
+            if(screening.movie not in movies and tag in screening.tag.filter(tag_type__name="competitions").all()):
+                movies.append(screening.movie)
+        competitions.append((tag, movies))
+            #    print("{tag} : {screening}".format(tag=tag,screening=screening))
+    
+    return render(request, 'bifffidus/movie_by_festival_competitions.html', {'festival': festival, 'competitions':competitions})
 
 def festival_detail(request, pk):
     festival = get_object_or_404(Festival, pk=pk)    

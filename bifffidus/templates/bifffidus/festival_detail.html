@@ -17,19 +17,20 @@
 		</p>
 		{% endfor %}	            
 	</div>	
-	<a href="{% url 'movie_by_festival' pk=festival.pk %}">Festival Movie List</a>
+	<a class="btn btn-outline-danger btn-lg" role="button" aria-pressed="true" href="{% url 'movie_by_festival' pk=festival.pk %}">Movies</a>
+	<a class="btn btn-outline-danger btn-lg" role="button" aria-pressed="true" href="{% url 'movie_by_festival_competitions' pk=festival.pk %}">Competitions</a>
 	
     {% regroup screenings by view_date as screenings_by_day %}
     {% for screening_list in screenings_by_day %}
     <div class="card text-light bifff-bg border">
-    	<div class="card-header" data-toggle="collapse" data-target="#day{{screening_list.grouper|date:"dmY"}}"> 
+    	<div class="card-header" data-toggle="collapse" data-target="#day{{screening_list.grouper|date:"ymd"}}"> 
 	    		{{screening_list.grouper|date:"D d/m/Y"|title}}
 	    	<span class="badge bifff-badge">
 	    		{{ screening_list.list|length }}
 	    	</span>
     	</div>
     	
-    	<div id="day{{screening_list.grouper|date:'dmY'}}" class="collapse">
+    	<div id="day{{screening_list.grouper|date:"ymd"}}" class="collapse">
     	{% for screen in screens %}
     		<div class="card-body">
 				<div class="row">
@@ -66,7 +67,5 @@
        	</div>
    	</div>
     {% endfor %}
-
-
     
 {% endblock content %}
