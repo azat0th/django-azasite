@@ -255,15 +255,15 @@ class Festival(models.Model):
         
         return "{title} [{year}]".format(title=self.title, year=self.start_date)
 
-class ScreeningQuerySet(models.QuerySet):
-    def by_day(self):        
-        return self
+#class ScreeningQuerySet(models.QuerySet):
+#    def by_day(self):        
+#        return self
     
-class ScreeningManager(models.Manager):
+#class ScreeningManager(models.Manager):
     
-    def by_day(self):
-        screenings_set = self.get_queryset().by_day()
-        return screenings_set
+#    def by_day(self):
+#        screenings_set = self.get_queryset().by_day()
+#        return screenings_set
      
 class Tag_Type(models.Model):
     name = models.CharField(max_length=100)

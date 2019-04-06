@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Job, Department
-import datetime
 from django.core.paginator import Paginator
 from .forms import  MovieSearchForm, PersonSearchForm
-from datetime import timedelta  
+from datetime import datetime, timedelta  
+from django.http import JsonResponse
+from calendar import month
 
 #This var is used to regroup screenings passed midnight with a date 
 # if passed midnight, then a new datefield is created to screening object with the date of the day before
@@ -70,7 +71,7 @@ def movie_detail(request, pk):
     tags = []
     for s in screenings:
         for tag in s.tag.all():
-            print(tag)
+            tag.festival = s.festival.title
             if(tag not in tags):
                 tags.append(tag)
     return render(request,  'bifffidus/movie_detail.html',  {'movie': movie, 'url_img' : url_img, 'screenings' : screenings, 'tags':tags})
@@ -125,17 +126,9 @@ def festival_detail(request, pk):
     url_img="https://image.tmdb.org/t/p/w45"
     return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img, 'screens': screens, 'director': director})
 
-def movie_by_date(request, year,  month,  day):
-    searched_date = datetime.date(year, month, day)
-
-    screenings_query = Screening.objects.filter(screening_datetime__year=year)
-    screenings = []
-    for s in screenings_query :        
-        if(s.screening_datetime.date()==searched_date and s.screening_datetime.hour>HOUR_MAX_SCREENING):                        
-            screenings.append(s)
-        if(s.screening_datetime.date()==searched_date + timedelta(days=1) and s.screening_datetime.hour<HOUR_MAX_SCREENING):
-            screenings.append(s)
-    
+def screenings_by_date(request, year,  month,  day):        
+    searched_date = datetime(year=year, month=month, day=day, hour=6, minute=0, second=0)
+    screenings = Screening.objects.filter(screening_datetime__range=[searched_date,searched_date+timedelta(days=1)])    
     return render(request, 'bifffidus/movie_by_date.html', {'screenings': screenings})
 
 def person_list(request):
@@ -195,8 +188,9 @@ def tag_list(request):
     return render(request, 'bifffidus/tag_list.html', {'tags': tags })
 
 def tag_detail(request, pk):
-    tag = get_object_or_404(Tag, pk=pk)    
-    screenings_result = Screening.objects.filter(tag__id=pk)
+    tag = get_object_or_404(Tag, pk=pk)
+    
+    screenings_result = Screening.objects.filter(tag__id=pk).order_by('-festival','movie__title')
     movies = []
     for s in screenings_result:
         if(s.movie not in movies):

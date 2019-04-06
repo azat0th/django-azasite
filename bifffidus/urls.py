@@ -9,7 +9,7 @@ urlpatterns = [
     path('festival/', views.festival_list,  name='festival_list'),
     path('festival/<int:pk>/', views.festival_detail,  name='festival_detail'),
 
-    path('festival/<int:year>/<int:month>/<int:day>/', views.movie_by_date, name='movie_by_date'),
+    path('festival/<int:year>/<int:month>/<int:day>/', views.screenings_by_date, name='screenings_by_date'),
     path('festival/<int:pk>/list/', views.movie_by_festival, name='movie_by_festival'),
     path('festival/<int:pk>/competitions/', views.movie_by_festival_competitions, name='movie_by_festival_competitions'),
     path('movie/', views.movie_list, name='movie_list'),    
@@ -25,6 +25,8 @@ urlpatterns = [
     path('country/<int:pk>', views.country_detail, name='country_detail'),
     
     path('tag/', views.tag_list, name='tag_list'),
-    path('tag/<int:pk>', views.tag_detail, name='tag_detail'),    
+    path('tag/<int:pk>', views.tag_detail, name='tag_detail'),
+    
+        
     
 ]

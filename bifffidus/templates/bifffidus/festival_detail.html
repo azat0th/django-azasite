@@ -23,14 +23,14 @@
     {% regroup screenings by view_date as screenings_by_day %}
     {% for screening_list in screenings_by_day %}
     <div class="card text-light bifff-bg border">
-    	<div class="card-header" data-toggle="collapse" data-target="#day{{screening_list.grouper|date:"ymd"}}"> 
+    	<div class="card-header" data-toggle="collapse" data-target="#day{{screening_list.grouper|date:"Ymd"}}"> 
 	    		{{screening_list.grouper|date:"D d/m/Y"|title}}
 	    	<span class="badge bifff-badge">
 	    		{{ screening_list.list|length }}
 	    	</span>
     	</div>
     	
-    	<div id="day{{screening_list.grouper|date:"ymd"}}" class="collapse">
+    	<div id="day{{screening_list.grouper|date:"Ymd"}}" class="collapse">
     	{% for screen in screens %}
     		<div class="card-body">
 				<div class="row">
@@ -39,7 +39,7 @@
 	       			{% if screen.id is screening.screen.id %}       			
 	       			<div class="column border">
 		       			<div data-href="{% url 'movie_detail' pk=screening.movie_id %}">
-		       				<img src="{{ screening.movie.get_poster_image_url_92 }}" alt="{{ screening.movie.title }}" class=""/>	       			
+		       				<img src="{{ screening.movie.get_poster_image_url_45 }}" alt="{{ screening.movie.title }}" class=""/>	       			
 			       			<h5>
 			       				{{screening.movie.title|title}}
 			       			</h5>

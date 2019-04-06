@@ -107,7 +107,7 @@
 			{% for screening in screenings %}
 				<tr>
 				<td>{{screening.festival.title}}</td>
-				<td>{{ screening.screening_datetime|date:"D d/m/Y H:i" }}({{ screening.screen }})</td>
+				<td>{{ screening.screening_datetime|date:"D d/m/Y H:i"|title }}({{ screening.screen }})</td>
 				</tr>				
 			{% endfor %}
 			</tbody>
@@ -120,10 +120,15 @@
 				{% for tag in tags %}
 					<tr>
 						<td>
+							{{tag.festival}}
+						</td>
+						<td>
 							{{tag.name|title}}
 							{% if tag.icon_path %}
-								<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}"></td></tr>
+								<img src="{% static tag.icon_path %}" " data-toggle="tooltip" title="{{tag.name|title}}">
 							{% endif %}
+						</td>
+					</tr>
 				{% endfor %}
 			</tbody>
 		</table>

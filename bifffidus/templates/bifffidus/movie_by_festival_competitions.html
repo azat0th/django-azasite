@@ -20,6 +20,7 @@
 		<a class="btn btn-outline-danger btn-lg" role="button" aria-pressed="true" href="{% url 'movie_by_festival' pk=festival.pk %}">Movies</a>
 		<a class="btn btn-outline-danger btn-lg" role="button" aria-pressed="true" href="{% url 'festival_detail' pk=festival.pk %}#page-start">Program</a>
 {% for competition in competitions %}
+	{% if competition.1|length > 0 %}
 	<div class="card text-light bifff-bg border">
     	<div class="card-header"> 
 	    		{{competition.0.name|title}} 
@@ -42,7 +43,8 @@
 	           	{% endfor %}
 	           	</div>
        	</div>
-   	</div>	
+   	</div>
+   	{% endif %}	
 {% endfor %}
 
 {% endblock content %}
