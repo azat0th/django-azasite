@@ -8,56 +8,7 @@
 	</form>
 	<h5>{% if search %}search title: "{{ search }}"{% endif %}</h5>
 	<h5>{{nb_movies}} movies found</h5>
-    
-    {% if movies and not message %}		
-	<nav id="list-start" aria-label="Movie List Navigation">
-	  <ul class="pagination">
-	  	{% if movies.has_previous %}
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1{% if search %}&movie_title={{search}}{% endif%}">1</a></li>
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.previous_page_number }}{% if search %}&movie_title={{search}}{% endif %}#list-start">Previous</a></li>
-	    {% endif %}
-	    	<li class="page-item page-link bifff-bg">{{ movies.number }} of {{ movies.paginator.num_pages }}</li>
-	    {% if movies.has_next %}
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.next_page_number }}{% if search %}&movie_title={{search}}{% endif%}#list-start">Next</a></li>
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.paginator.num_pages }}{% if search %}&movie_title={{search}}{% endif %}#list-start">last &raquo;</a></li>
-	    {% endif %}
-	  </ul>
-	</nav>
-	{% endif %}
-
-    {% for movie in movies %}
-        <div class="border border-danger text-light row" data-href="{% url 'movie_detail' pk=movie.pk %}">
-        	<div class="col-md-4">
-        		<img src="{{movie.get_poster_image_url_92}}">
-        	</div>
-        	<div class="col-md-8">
-		        <h4>{{ movie.title|title }} ({{movie.release_date|date:"Y"}})</h4>
-        	    <p> {{ movie.tagline }}</p>
-        	    <p>{{ movie.get_director}} </p>
-        	   	<p>
-        	    {% for genre in movie.genre.all %}
-        	    	[{{genre.name}}]
-        	    {% endfor%}
-        	    </p>
-            </div>            
-        </div>
-    {% endfor %}
-    
-    {% if movies and not message %}
-	<nav aria-label="Movie List Navigation">
-	  <ul class="pagination">
-	  	{% if movies.has_previous %}
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page=1{% if search %}&movie_title={{search}}{% endif%}">1</a></li>
-	    	<li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.previous_page_number }}{% if search %}&movie_title={{search}}{% endif %}#list-start">Previous</a></li>
-	    {% endif %}
-	    	<li class="page-item page-link bifff-bg">{{ movies.number }} of {{ movies.paginator.num_pages }}</li>
-	    {% if movies.has_next %}
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.next_page_number }}{% if search %}&movie_title={{search}}{% endif%}#list-start">Next</a></li>
-		    <li class="page-item"><a class="page-link bifff-bg" href="?page={{ movies.paginator.num_pages }}{% if search %}&movie_title={{search}}{% endif %}#list-start">last &raquo;</a></li>
-	    {% endif %}
-	  </ul>
-	</nav>
-	{% endif %}
-	
+           
+    {% include "bifffidus/sub_movie_list.html" %}	
 	
 {% endblock content %}

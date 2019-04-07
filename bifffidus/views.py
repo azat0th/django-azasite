@@ -60,9 +60,8 @@ def movie_list(request):
         page = 1    
     
     movies = paginator.page(page)
-    director = get_object_or_404(Job,  jobname="Director")    
-    url_img="https://image.tmdb.org/t/p/w92"
-    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'url_img' : url_img, 'form': form, 'director':director, 'search':search})
+    
+    return render(request,  'bifffidus/movie_list.html',  {'movies': movies,'nb_movies': nb_movies, 'form': form, 'search':search})
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie,  pk=pk)
@@ -206,8 +205,18 @@ def country_list(request):
 
 def country_detail(request,pk):
     country = get_object_or_404(Country, pk=pk)
-    movies = Movie.objects.filter(country__id=pk).order_by('title')
-    return render(request, 'bifffidus/country_detail.html', {'country':country, 'movies': movies})
+    movie_list = Movie.objects.filter(country__id=pk).order_by('title')
+    nb_movies = len(movie_list)
+    paginator = Paginator(movie_list, 25) #show 25 movies
+    page = request.GET.get('page')
+    
+    if(page is None):
+        page = 1    
+    
+    movies = paginator.page(page)
+    
+    
+    return render(request, 'bifffidus/country_detail.html', {'country':country, 'movies': movies,'nb_movies':nb_movies})
 
 def genre_list(request):
     genres = Genre.objects.order_by('name').all
@@ -215,5 +224,15 @@ def genre_list(request):
 
 def genre_detail(request,pk):
     genre = get_object_or_404(Genre, pk=pk)
-    movies = Movie.objects.filter(genre__id=pk).order_by('title')
-    return render(request, 'bifffidus/genre_detail.html', {'genre':genre, 'movies': movies})
+    movie_list = Movie.objects.filter(genre__id=pk).order_by('title')
+    nb_movies = len(movie_list)
+    paginator = Paginator(movie_list, 25) #show 25 movies
+    page = request.GET.get('page')
+    
+    if(page is None):
+        page = 1    
+    
+    movies = paginator.page(page)
+    print(movies)
+    
+    return render(request, 'bifffidus/genre_detail.html', {'genre':genre, 'movies': movies, 'nb_movies': nb_movies})

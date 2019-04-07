@@ -22,11 +22,11 @@
 {% for competition in competitions %}
 	{% if competition.1|length > 0 %}
 	<div class="card text-light bifff-bg border">
-    	<div class="card-header"> 
+    	<div class="card-header" data-toggle="collapse" data-target="#tag{{competition.0.id}}"> 
 	    		{{competition.0.name|title}} 
 	    		<img src="{% static competition.0.icon_path %}" alt="{{competition.0.name|title}}" data-toggle="tooltip" title="{{competition.0.name|title}}">	    	
     	</div>
-    	
+    	<div id="tag{{competition.0.id}}" class="collapse">
     	<div class="card-body" >
 				<div class="row">
 	       		{% for movie in competition.1 %}       			
@@ -42,6 +42,7 @@
 	       			</div>	           		
 	           	{% endfor %}
 	           	</div>
+       	</div>
        	</div>
    	</div>
    	{% endif %}	

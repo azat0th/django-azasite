@@ -1,21 +1,11 @@
 {% extends 'bifffidus/base.html' %}
 
 {% block content %}
-    <div class="post text-light border">       
-        <h1 class="blog-title">{{ country.name }}</h1>
-	<table class="table table-dark table-hover border border-danger">
-		<tbody>
-   			{% for movie in movies %}   				
-   				<tr data-href="{% url 'movie_detail' pk=movie.pk %}">
-	    		<th scope="row"><h4><img src="{{movie.get_poster_image_url_92}}"></h4></th>
-	    		<td>
-	    			<h5>{{ movie.title|title }}</h5>
-	    			<p>{{ movie.get_director }}</p>
-	    			<p>{{ movie.get_year}}</p>	    			
-	    		</td>      		      		
-	    	</tr>
-   			{% endfor %}
-   		</tbody>
-   	</table>   	
+    <div class="post text-light border border-danger">       
+        <h1 class="">{{ country.name|title }}</h1> 
+        <p>{{ nb_movies }} movies found</p>
     </div>
+    
+	{% include "bifffidus/sub_movie_list.html" %}
+	
 {% endblock %}

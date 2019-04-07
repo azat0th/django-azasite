@@ -124,7 +124,6 @@ img {
 .card-header:hover {
 	cursor: pointer;
 	color: yellow;
-	background-color: dimgray;
-	
+	background-color: dimgray;	
 }
 /*----------->*/

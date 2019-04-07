@@ -3,21 +3,9 @@
 {% block content %}
     <div class="post text-light border border-danger">       
         <h1 class="">{{ genre.name|title }}</h1> 
-        <p>{{movies|length  }} movies found</p>
-	<table class="table table-dark table-hover border border-danger">
-		<tbody>
-   			{% for movie in movies %}   				
-   				<tr data-href="{% url 'movie_detail' pk=movie.pk %}">
-	    		<th scope="row"><h4><img src="{{movie.get_poster_image_url_92}}"></h4></th>
-	    		<td>
-	    			<h5>{{ movie.title|title }}</h5>
-	    			<p>{{ movie.get_director }}</p>
-	    			<p>{{ movie.get_year}}</p>
-	    			<p>{% for country in movie.country.all %}[{{country.name }}]{% endfor %}</p>			
-	    		</td>      		      		
-	    	</tr>
-   			{% endfor %}
-   		</tbody>
-   	</table>  
+        <p>{{ nb_movies }} movies found</p>
     </div>
+    
+	{% include "bifffidus/sub_movie_list.html" %}
+	    
 {% endblock %}
