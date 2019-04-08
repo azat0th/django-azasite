@@ -1,27 +1,40 @@
 {% extends 'bifffidus/base.html' %}
-
+{% load static %}
 {% block content %}
 
-    <div class="post text-light mx-auto">       
-        <h1 class="">{{ tag.name|title }}</h1>
-        <p>{{movies|length  }} movies found</p>
-        {% regroup movies by festival as movies_by_festival %}
-        
-        {% for mbf in movies_by_festival %}
-        <h3>{{mbf.grouper}}({{ mbf.list|length }} movies)</h3>
-			<div class="row"> 
-        	{% for movie in mbf.list %}
-				<div class="column border border-danger">
-					
-					<a  href="{% url 'movie_detail' pk=movie.pk %}">
-						<img src="{{movie.get_poster_image_url_92}}">
-					</a>
-					<h5><a href="{% url 'movie_detail' pk=movie.id %}">{{ movie.title|title }}</a></h5>
-					<h6>{{movie.get_director}}</h6>
-				</div>   	
-   			{% endfor %}
-			</div>
-   		{% endfor %}
+<div class="text-light">       
+	<h1 class="">{{ tag.name|title }}</h1>
+    <p>{{movies|length  }} movies found</p>
+</div>
+
+{% regroup movies by festival as movies_by_festival %}
+{% for mbf in movies_by_festival %}
+<div class="card text-light bifff-bg border">
+    <div class="card-header" data-toggle="collapse" data-target="#ttt{{forloop.counter}}">
+       	{{mbf.grouper}}
+    	<span class="badge bifff-badge">
+    		{{ mbf.list|length }}
+	   	</span>        	
     </div>
+    <div id="ttt{{forloop.counter}}" class="collapse">
+       	<div class="card-body">
+			<div class="row">
+   			{% for movie in mbf.list %}
+				<div class="column border">
+	       			<div data-href="{% url 'movie_detail' pk=movie.id %}">
+	       				<img src="{{ movie.get_poster_image_url_92 }}" alt="{{ movie.title }}" class=""/>	       			
+		       			<h5>
+		       				{{movie.title|title}}
+		       			</h5>
+	      				<p>{{movie.get_director}}</p>			      						       		
+       				</div>
+       			</div>
+			{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endfor %}
+
     
 {% endblock %}

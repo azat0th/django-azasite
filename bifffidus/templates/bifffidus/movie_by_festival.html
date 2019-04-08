@@ -1,11 +1,9 @@
 {% extends 'bifffidus/base.html' %}
 {% block content %}
 
-<p>Nombre de films du festival: {{ movies|length }}</p>
+<p>Movies found: {{ movies|length }}</p>
 
-{% for movie in movies %}
-	<div class="border text-light">		
-		<p><a  href="{% url 'movie_detail' pk=movie.pk %}"><h2 class='blog-title'>{{movie.title }}</h2></a></p>			            
-	</div>
-{% endfor %}
+{% include "bifffidus/sub_movie_list.html" %}
+
+
 {% endblock content %}

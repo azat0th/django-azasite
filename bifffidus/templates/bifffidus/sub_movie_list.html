@@ -1,4 +1,5 @@
-{% if movies and not message %}		
+{% load static %}	
+	{% if nb_movies > 25 %}		
 	<nav id="list-start" aria-label="Movie List Navigation">
 	  <ul class="pagination">
 	  	{% if movies.has_previous %}
@@ -15,7 +16,7 @@
 	{% endif %}
 
     {% for movie in movies %}
-        <div class="border border-danger text-light row" data-href="{% url 'movie_detail' pk=movie.pk %}">
+        <div class="border border-danger row" data-href="{% url 'movie_detail' pk=movie.pk %}">
         	<div class="col-md-4">
         		<img src="{{movie.get_poster_image_url_92}}">
         	</div>
@@ -28,11 +29,25 @@
         	    	[{{genre.name}}]
         	    {% endfor%}
         	    </p>
+        	    {% if movie.tags %}
+        	    <p>
+        	    {% for tag in movie.tags %}        	    
+        	    	{% if tag.icon_path %}
+						<a  data-toggle="popover" title="{{tag|title}}" data-content="">
+							<img src="{% static tag.icon_path %}" alt="{{tag|title}}" data-toggle="tooltip" title="{{tag|title}}">
+						</a>
+					{% else %}
+						[{{tag|title}}]
+					{% endif %}        	    
+        	    	
+        	    {% endfor%}
+        	    </p>
+        	    {% endif %}
             </div>            
         </div>
     {% endfor %}
     
-    {% if movies and not message %}
+    {% if nb_movies > 25 %}
 	<nav aria-label="Movie List Navigation">
 	  <ul class="pagination">
 	  	{% if movies.has_previous %}

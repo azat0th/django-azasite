@@ -1,0 +1,42 @@
+{% extends 'bifffidus/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="text-light">		
+	<h2 class='blog-title'>{{ festival.title }}</h2>
+	{% if festival.poster_path %}
+		<img src="{{ festival.get_poster_image_url }}" class="img-thumbnail  mx-auto d-block"/>
+	{% endif %}
+	<p>From {{festival.start_date}} to {{festival.end_date}}</p>
+	{% for p in festival.place.all %}
+		<p>{{ p.name }}</p>
+		<p>Room(s):		
+			{% for s in p.screen.all %}
+				[ {{s.room_name|title}} ]
+			{% endfor %}
+		</p>
+	{% endfor %}
+	<p>{{movies|length}} movies found</p>	            
+</div>	
+<div class="text-light bifff-bg row">
+{% for movie in movies %}
+    <div class="card border  bifff-bg column">
+    	<div class="card-header bifff-bg">
+    		<p>{{movie.tag_award|title}}<p>
+    		{% if movie.tag_award.icon_path %}
+    			<img src="{% static movie.tag_award.icon_path %}" alt="">
+    		{% endif %}
+	   	</div>		
+					
+		<div data-href="{% url 'movie_detail' pk=movie.id %}">
+		
+			<img src="{{ movie.get_poster_image_url_92 }}" alt="{{ movie.title }}" class=""/>	       			
+      			<h5>
+       				{{movie.title|title}}
+       			</h5>
+   				<p>{{movie.get_director}}</p>			      						       		
+		</div>				
+	</div>
+{% endfor %}	
+</div>    
+{% endblock %}

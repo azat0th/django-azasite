@@ -2,9 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from .models import Movie, Festival, Screen, Screening, Person, Cast, Crew, Tag, Country, Genre, Job, Department
 from django.core.paginator import Paginator
 from .forms import  MovieSearchForm, PersonSearchForm
-from datetime import datetime, timedelta  
+from datetime import datetime, timedelta,date  
 from django.http import JsonResponse
 from calendar import month
+from bifffidus.models import Tag_Type
 
 #This var is used to regroup screenings passed midnight with a date 
 # if passed midnight, then a new datefield is created to screening object with the date of the day before
@@ -80,7 +81,12 @@ def movie_by_festival(request, pk):
     movies = []
     for screening in screenings :
         if screening.movie not in movies:
-            movies.append(screening.movie)
+            tags = []            
+            for tag in screening.tag.all():
+                tags.append(tag)
+            movie = screening.movie
+            movie.tags = tags
+            movies.append(movie)            
     url_img="https://image.tmdb.org/t/p/w92"
     dates = get_dates_by_festival(pk)
     return render(request, 'bifffidus/movie_by_festival.html', {'movies':movies, 'dates':dates, 'url_img' : url_img,})
@@ -106,7 +112,7 @@ def movie_by_festival_competitions(request, pk):
     return render(request, 'bifffidus/movie_by_festival_competitions.html', {'festival': festival, 'competitions':competitions})
 
 def festival_detail(request, pk):
-    festival = get_object_or_404(Festival, pk=pk)    
+    festival = get_object_or_404(Festival, pk=pk)
     #screenings = Screening.objects.filter(festival_id=pk).order_by('screening_datetime')
     director = get_object_or_404(Job,  jobname="Director")  
     screens = []
@@ -121,9 +127,30 @@ def festival_detail(request, pk):
         if(s.screening_datetime.hour<HOUR_MAX_SCREENING):
             s.view_date = s.screening_datetime.date() - timedelta(days=1)
             screenings.append(s)
-
+    palm_exist = True
+    if(festival.end_date > date.today()):
+        palm_exist = False
+        
     url_img="https://image.tmdb.org/t/p/w45"
-    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img, 'screens': screens, 'director': director})
+    return render(request, 'bifffidus/festival_detail.html', {'festival': festival, 'screenings':screenings, 'url_img': url_img, 'screens': screens, 'director': director, 'palm_exist':palm_exist})
+
+def festival_palmares(request, pk):
+    festival = get_object_or_404(Festival, pk=pk)
+    tag_type_awards = get_object_or_404(Tag_Type, name="awards")
+    screenings_list = Screening.objects.filter(tag__tag_type=tag_type_awards)
+    movies=[]
+    for screening in screenings_list:
+        print(screening.festival)
+        if(screening.movie not in movies and screening.festival.id==pk):            
+            m = screening.movie
+            for tag in screening.tag.all():
+                if(tag.tag_type.name == 'awards'):
+                    m.tag_award = tag
+            m.festival = screening.festival.title
+            movies.append(screening.movie)
+            
+        
+    return render(request, 'bifffidus/festival_palmares.html', {'festival': festival, 'movies': movies})
 
 def screenings_by_date(request, year,  month,  day):        
     searched_date = datetime(year=year, month=month, day=day, hour=6, minute=0, second=0)
@@ -188,16 +215,22 @@ def tag_list(request):
 
 def tag_detail(request, pk):
     tag = get_object_or_404(Tag, pk=pk)
-    
-    screenings_result = Screening.objects.filter(tag__id=pk).order_by('-festival','movie__title')
+    print(tag.tag_type.name)
+    if tag.tag_type.name == 'awards' :
+        print('ok')
+        template = 'bifffidus/tag_detail_awards.html'
+    else : 
+        print('pas ok')
+        template = 'bifffidus/tag_detail.html'
+    screenings_list = Screening.objects.filter(tag__id=pk).order_by('-festival','movie__title')
     movies = []
-    for s in screenings_result:
+    for s in screenings_list:
         if(s.movie not in movies):
             m = s.movie
             m.festival = s.festival.title
             movies.append(s.movie)
-        
-    return render(request, 'bifffidus/tag_detail.html', {'tag':tag, 'movies':movies})
+    print(template)
+    return render(request, template, {'tag':tag, 'movies':movies})
 
 def country_list(request):
     countries = Country.objects.order_by('name').all

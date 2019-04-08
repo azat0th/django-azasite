@@ -1,0 +1,31 @@
+{% extends 'bifffidus/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="text-light bifff-bg">       
+	<h1 class="">{{ tag.name|title }}</h1>
+    <p>{{movies|length  }} movies found</p>    
+</div>
+<div class="text-light bifff-bg row">
+{% regroup movies by festival as movies_by_festival %}
+{% for mbf in movies_by_festival %}
+    <div class="card border column bifff-bg">
+    	<div class="card-header bifff-bg">
+    	  	{{mbf.grouper}}
+	   	</div>
+	   	      	
+		{% for movie in mbf.list %}			
+		<div data-href="{% url 'movie_detail' pk=movie.id %}">
+			<img src="{{ movie.get_poster_image_url_92 }}" alt="{{ movie.title }}" class=""/>	       			
+      			<h5>
+       				{{movie.title|title}}
+       			</h5>
+   				<p>{{movie.get_director}}</p>			      						       		
+		</div>
+		{% endfor %}			
+	</div>	
+{% endfor %}
+</div>
+
+    
+{% endblock %}

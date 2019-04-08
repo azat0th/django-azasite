@@ -12,6 +12,7 @@ urlpatterns = [
     path('festival/<int:year>/<int:month>/<int:day>/', views.screenings_by_date, name='screenings_by_date'),
     path('festival/<int:pk>/list/', views.movie_by_festival, name='movie_by_festival'),
     path('festival/<int:pk>/competitions/', views.movie_by_festival_competitions, name='movie_by_festival_competitions'),
+    path('festival/<int:pk>/palmares/', views.festival_palmares, name='festival_palmares'),
     path('movie/', views.movie_list, name='movie_list'),    
     
     path('person/', views.person_list, name='person_list'),
