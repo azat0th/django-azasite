@@ -2,15 +2,18 @@
 
 {% block content %}
     <div class="post text-light border">
-        {% if post.published_date %}
-            <div class="date">
-                {{ post.published_date }}
-            </div>
-        {% else %}
-            <a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
-        {% endif %}
+    	{% if perms.can_post_on_blog %}
+	        {% if post.published_date %}
+	            <div class="date">
+	                {{ post.published_date }}
+	            </div>
+	        {% else %}
+	            <a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+	        {% endif %}
+	    
         <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><i class="far fa-edit">edit</i></a>
         <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><i class="far fa-trash-alt">remove</i></a>
+        {% endif %}
         <h1 class="blog-title">{{ post.title }}</h1>
         <p>{{ post.text|linebreaksbr }}</p>
         Images({{post.images.count}})

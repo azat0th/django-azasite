@@ -37,12 +37,14 @@
                         <div class="border">
                             {% if user.is_authenticated %}                
                                 <p>Hello {{ user.username }} <small>(<a href="{% url 'logout' %}" class="text-muted"> Log out </a>)</small></p>
+                                {% if perms.can_post_on_blog %}
                                 <p><a href="{% url 'post_new' %}" class="btn btn-sm btn-outline-secondary">
                                     <i class="far fa-plus-square"></i>
                                 </a>
                                 <a href="{% url 'post_draft_list' %}" class="btn btn-sm btn-outline-secondary">
                                     <i class="far fa-file-alt"></i>
                                 </a></p>
+                                {% endif %}
                             {% else %}
                                 <p><a href="{% url 'login' %}" class="btn btn-sm btn-outline-secondary">Login</a></p>                           
                             {% endif %}                        

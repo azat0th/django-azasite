@@ -13,3 +13,5 @@ scrapmovies.py
 /bifffidus/migration
 *.sh
 *.json
+/media/audio/*.*
+!.gitkeep

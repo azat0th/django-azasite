@@ -2,8 +2,12 @@
 
 {% block content %}
     <h1>New post</h1>
+    {% if perms.can_post_on_blog %}
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Save</button>
     </form>
+    {% else %}
+    	Not authorized to edit posts.
+    {% endif %}
 {% endblock %}

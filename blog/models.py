@@ -5,6 +5,8 @@ from datetime import datetime
 # Create your models here.
 
 class Post(models.Model):
+    class Meta:
+        permissions = (("can_post_on_blog", "Create or Update the posts"),)
     author = models.ForeignKey('auth.User',  on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     text = models.TextField()
@@ -51,7 +53,9 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-class Image_Post(models.Model):    
+class Image_Post(models.Model):
+    title = models.CharField(max_length=200, default="")
+    updated_date = models.DateTimeField(default = timezone.now)    
     image_file = models.ImageField(upload_to = 'img_post/', default='img_post/no-img.jpg')
-    
+
     

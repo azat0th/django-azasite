@@ -1,0 +1,65 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css?family=Limelight|Shojumaru|Changa" rel="stylesheet"> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'css/azaplayer.css' %}">
+        
+        <title>AzaPlayer</title>
+    </head>
+    <body class="azap-bg">
+        <div class="container azap-bg">
+            <header class="blog-header py-3">
+                <div class="row flex-nowrap justify-content-between">
+                    <div class="col-2 pt-1 border">
+                        <!--a class="text-muted" href="#">Subscribe</a-->
+                    </div>
+                    <div class="col-8 border text-center" >
+                        <a class="" href="/"><h1 class="blog-header-logo">AzaPlayer</h1></a>
+                    </div>
+                    <div class="col-2 d-flex justify-content-end border">
+                        <!--a class="btn btn-sm btn-outline-secondary" href="#">Sign up</a-->                       
+                    </div>
+                </div>
+            </header>
+            <main role="main" class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                                         
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                    <div class="col-md-4 text-light">                        
+                        <div class="border">
+                            {% if user.is_authenticated %}                
+                                <p>Hello {{ user.username }} <small>(<a href="{% url 'logout' %}" class="text-muted"> Log out </a>)</small></p>
+                                <p>
+                                	<a href="{% url 'audio_new' %}" class="btn btn-sm btn-outline-secondary">
+                                    	<i class="far fa-plus-square"></i>
+                                	</a>
+                                </p>
+                            {% else %}
+                                <p><a href="{% url 'login' %}" class="btn btn-sm btn-outline-secondary">Login</a></p>                           
+                            {% endif %}                        
+                        </div>
+                    </div>
+                </div>
+            </main>       
+         </div>
+        
+        <footer class="blog-footer ">
+            <div class="text-center border text-light">
+                <p >Blog using <a href="https://www.djangoproject.com/">Django</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://fontawesome.com/">Font Awesome</a></p>
+                  <p> © {% now "Y" %} by <a href="mailto:bifffidus@proximus.be"> Azat0th </a></p>             
+                <p><a href="#">Back to top</a></p>
+                 
+            </div>
+        </footer>
+        <script src="{% static 'js/playerscript.js' %}"></script>
+    </body>
+</html>
+
