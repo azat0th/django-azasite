@@ -10,4 +10,4 @@ class Image_Post(models.Model):
 class Audio_Post(models.Model):
     title = models.CharField(max_length=200, blank=True)
     #uploaded_date = models.DateTimeField(auto_now_add=True)
-    audiofile = models.FileField(upload_to = 'audio/')
+    audiofile = models.FileField()

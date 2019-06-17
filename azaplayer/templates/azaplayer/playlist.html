@@ -3,10 +3,10 @@
 {% block content %}
 <p>{{message}}</p>
 <audio tabindex="0" id="player" controls="controls">
-balise audio HTML5 inconnue</audio>
+unknown audio tag HTML5</audio>
 <ul id="playlist">
 	{% for audiopost in audioposts %}
-		<li><a href="{{ MEDIA_URL }}{{audiopost.audiofile}}" onclick="loadSong()"">{{audiopost.title}} - {{ MEDIA_URL }}{{audiopost.audiofile}}</a></li>	    	
+		<li><a href="{% get_media_prefix %}{{audiopost.audiofile}}" onclick="loadSong()">{{audiopost.title}} - {{audiopost.audiofile}}</a></li>
     {% endfor %}
 </ul>
 

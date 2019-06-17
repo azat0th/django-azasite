@@ -3,6 +3,8 @@ from .models import Image_Post, Audio_Post
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .forms import AudioPostForm
+import logging
+
 try:
     import mutagen
 except ImportError:
@@ -12,26 +14,29 @@ from mutagen import MutagenError
 
 # Create your views here.
 def playlist(request):
-    audioposts = Audio_Post.objects.order_by('title')    
+    audioposts = Audio_Post.objects.order_by('title')
     return render(request,  'azaplayer/playlist.html',  {'audioposts': audioposts,  'sidebar': 1, })
 
 @login_required
 def audio_new(request):
 # Add a post as logged member
+    logger = logging.getLogger(__name__)
+
     if request.method == "POST":
         message=""
         form = AudioPostForm(request.POST, request.FILES)
         try:
-            metadata = mutagen.File(request.FILES['audiofile'], easy=True)                
-            print(metadata)            
+            metadata = mutagen.File(request.FILES['audiofile'], easy=True)
+            #logger.info(metadata)
         except MutagenError:
             print("Loading failed")
-        if form.is_valid() and metadata:
+        if form.is_valid() and metadata != None:
             form.save()
             return redirect('playlist')
         else :
-            message= "Unable to upload the file. Is it a correct sound file?"
-            print(message)
+            message= "ERROR azaplayer.views.audio_new: Unable to upload the file. Is it a correct sound file?"
+            #print(message)
+            logger.info (message)
             return redirect('audio_new')
     else:
         form = AudioPostForm()
